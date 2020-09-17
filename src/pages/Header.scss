@@ -1,0 +1,14 @@
+@import '../App.scss';
+
+.header-div > div {
+    display: inline-block;
+}
+
+.header-image {
+    max-width: 100px;
+}
+
+.header-heading {
+    font-family: Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;;
+    color: #444;
+}
