@@ -15,3 +15,66 @@ body {
 	padding: 0;
 	font-family: Montserrat, Verdana, Geneva, Tahoma, sans-serif;
 }
+
+.flex-layout {
+	display: flex;
+	width: 100%;
+}
+
+.flex-30 {
+	flex: 1 1 24%;
+}
+
+.flex-auto {
+	flex: 1 1 76%;
+}
+
+.grey-div {
+	background: #F1F1F1;
+}
+
+
+$primaryColor: #FFF; //#3A76C6;
+$primaryColorDark: #EEE;
+$secondaryColor: rgb(80, 80, 80);
+// $gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
+$inputTextColor: #444;
+// $themeSecondary: #7a74ff;
+
+$xs: 0px;
+$sm: 600px;
+$md: 960px;
+$lg: 1280px;
+$xl: 1920px;
+
+$primary: #FFF;
+$secondary: #EEE;
+$danger: #f44336;
+$warning: #DEC716;
+$caution: #e49013;
+$info: #168BDE;
+$success: #379c37;
+
+:export {
+    primaryColor: #FFF;
+    primaryColorDark: #EEE;
+    secondaryColor: rgb(80, 80, 80);
+    // gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
+    inputTextColor: #444;
+    // themeSecondary: #7a74ff;
+    
+    xs: 0px;
+    sm: 600px;
+    md: 960px;
+    lg: 1280px;
+    xl: 1920px;
+
+    primary: #FFF;
+    secondary: #EEE;
+    danger: #f44336;
+    warning: #DEC716;
+    info: #168BDE;
+    caution: #e49013;
+    success: #379c37;
+
+}

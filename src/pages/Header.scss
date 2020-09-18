@@ -1,14 +1,36 @@
 @import '../App.scss';
 
-.header-div > div {
-    display: inline-block;
+.MuiToolbar-root {
+    padding: 15px;
+    justify-content: center;
 }
 
-.header-image {
-    max-width: 100px;
+.header-image-div {
+    position: fixed;
+    left: 20px;
+    max-width: 110px;
+    align-self: flex-start;
+}
+
+.header-image-div img {
+    width: 100%;
 }
 
 .header-heading {
     font-family: Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;;
     color: #444;
+}
+
+#oSvg {
+    // transform: translate(-110.38px, -178.76px) rotateZ(0deg);
+    // animation: clockAnime 1s infinite;
+}
+
+@keyframes clockAnime {
+    from {
+        transform: rotateZ(0deg);
+    }
+    to {
+        transform: rotateZ(360deg);
+    }
 }
