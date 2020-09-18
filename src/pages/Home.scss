@@ -1,0 +1,46 @@
+@import '../App.scss';
+
+.section-content, .small-section-content {
+    width: 100%;
+    text-align: left;
+}
+
+.section-content ul, .small-section-content ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.section-content a:first-child li, .small-section-content a:first-child li {
+    margin-top: 24px;
+}
+
+.section-content li {
+    padding: 24px;
+}
+
+.guide-div {
+    margin: 10px;
+    text-align: center;
+    max-width: 280px;
+}
+
+.guide-div > div {
+    padding: 15px;
+    font-size: 14px;
+    color: #888;
+}
+
+.guide-div svg {
+    width: 46px;
+    fill: #555;
+}
+
+.small-section-content {
+    width: auto;
+}
+
+.small-section-content li {
+    padding: 12px;
+    font-size: 14px;
+}

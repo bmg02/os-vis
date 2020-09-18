@@ -22,21 +22,54 @@ body {
 }
 
 .flex-30 {
-	flex: 1 1 24%;
+	flex: 1 1 30%;
+}
+
+.flex-70 {
+	flex: 1 1 70%;
 }
 
 .flex-auto {
-	flex: 1 1 76%;
+    flex: 1 1 auto;
 }
 
 .grey-div {
 	background: #F1F1F1;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.section-div {
+    padding: 60px 0;
+}
+
+.section-heading {
+    font: 20px Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;
+    color: #444;
+}
+
+.full-height {
+    min-height: calc(100vh - 200px);
+    max-height: 100%;
+}
+
+.max-content-width {
+    width: max-content !important;
+}
+
+.flex-space-evenly {
+    justify-content: space-evenly;
+}
 
 $primaryColor: #FFF; //#3A76C6;
 $primaryColorDark: #EEE;
-$secondaryColor: rgb(80, 80, 80);
+$secondaryColor: #505050;
 // $gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
 $inputTextColor: #444;
 // $themeSecondary: #7a74ff;
@@ -48,7 +81,7 @@ $lg: 1280px;
 $xl: 1920px;
 
 $primary: #FFF;
-$secondary: #EEE;
+$secondary: #505050;
 $danger: #f44336;
 $warning: #DEC716;
 $caution: #e49013;
@@ -58,7 +91,7 @@ $success: #379c37;
 :export {
     primaryColor: #FFF;
     primaryColorDark: #EEE;
-    secondaryColor: rgb(80, 80, 80);
+    secondaryColor :#505050;
     // gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
     inputTextColor: #444;
     // themeSecondary: #7a74ff;
@@ -70,7 +103,7 @@ $success: #379c37;
     xl: 1920px;
 
     primary: #FFF;
-    secondary: #EEE;
+    secondary: #505050;
     danger: #f44336;
     warning: #DEC716;
     info: #168BDE;

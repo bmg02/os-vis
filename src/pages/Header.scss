@@ -7,6 +7,7 @@
 
 .header-image-div {
     position: fixed;
+    top: 15px;
     left: 20px;
     max-width: 110px;
     align-self: flex-start;
@@ -18,19 +19,5 @@
 
 .header-heading {
     font-family: Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;;
-    color: #444;
-}
-
-#oSvg {
-    // transform: translate(-110.38px, -178.76px) rotateZ(0deg);
-    // animation: clockAnime 1s infinite;
-}
-
-@keyframes clockAnime {
-    from {
-        transform: rotateZ(0deg);
-    }
-    to {
-        transform: rotateZ(360deg);
-    }
+    color: $secondaryColor;
 }
