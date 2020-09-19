@@ -6,7 +6,7 @@ function Home() {
     return (
         <div className='container-div flex-layout'>
             <div className='section-div grey-div flex-30 full-height'>
-                <div className='section-heading text-center' style={{ marginTop: '20px' }}>Scheduling Algorithms</div>
+                <div className='section-heading text-center margin-top-20'>Scheduling Algorithms</div>
                 <center>
                 <div className='section-content max-content-width'>
                     <ul>
