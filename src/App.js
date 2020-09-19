@@ -50,7 +50,8 @@ function App() {
 					<div className='main-container'>
 						<Switch location={ location }>
 							<Route exact path='/' component={Home} />
-							<Route exact path='/:algo' component={Algo} />
+							<Route exact path='/scheduling/:algo' component={Algo} />
+							<Route exact path='/devs/:name' component={Algo} />
 						</Switch>
 					</div>
 				)} />

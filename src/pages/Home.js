@@ -1,29 +1,29 @@
-import { Link } from '@material-ui/core';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Home.scss';
 
 function Home() {
     return (
         <div className='container-div flex-layout'>
             <div className='section-div grey-div flex-30 full-height'>
-                <div className='section-heading text-center extra-large'>Scheduling Algorithms</div>
+                <div className='section-heading text-center' style={{ marginTop: '20px' }}>Scheduling Algorithms</div>
                 <center>
                 <div className='section-content max-content-width'>
                     <ul>
-                        <Link href='#' color='secondary'><li>First Come First Serve</li></Link>
-                        <Link href='#' color='secondary'><li>Priority Scheduling</li></Link>
-                        <Link href='#' color='secondary'><li>Longest Job First</li></Link>
-                        <Link href='#' color='secondary'><li>Longest Remaining Time First</li></Link>
-                        <Link href='#' color='secondary'><li>Round Robin</li></Link>
-                        <Link href='#' color='secondary'><li>Shortest Job First</li></Link>
-                        <Link href='#' color='secondary'><li>Shortest Remaining Time First</li></Link>
+                        <Link to='/scheduling/first-come-first-serve'><li>First Come First Serve</li></Link>
+                        <Link to='/scheduling/priority-scheduling'><li>Priority Scheduling</li></Link>
+                        <Link to='/scheduling/longest-job-first'><li>Longest Job First</li></Link>
+                        <Link to='/scheduling/longest-remaining-time-first'><li>Longest Remaining Time First</li></Link>
+                        <Link to='/scheduling/round-robin'><li>Round Robin</li></Link>
+                        <Link to='/scheduling/shortest-job-first'><li>Shortest Job First</li></Link>
+                        <Link to='/scheduling/shortest-remaining-time-first'><li>Shortest Remaining Time First</li></Link>
                     </ul>
                 </div>
                 </center>
             </div>
             <div className='section-div flex-70'>
                 <center>
-                <div className='section-heading text-center extra-large'>How To Use?</div><br/><br/>
+                <div className='section-heading text-center'>How To Use?</div><br/><br/>
                 <div className='section-content flex-layout flex-space-evenly'>
                     <div className='guide-div flex-auto'>
                         <div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></div>
@@ -40,15 +40,15 @@ function Home() {
                 </div>
                 <div className='flex-layout' style={{ marginTop: '60px' }}>
                     <div className='flex-auto'>
-                        <object data='https://www.youtube.com/embed/vi6v0MOWp2Q' alt='Video tutorial' width='420px' height='240px'></object>
+                        <object data='https://www.youtube.com/embed/vi6v0MOWp2Q' alt='Video tutorial' width='460px' height='260px'></object>
                     </div>
                     <div className='small-section-content flex-auto'>
                         <div className='section-heading text-left extra-large'>Developers</div>
                         <ul>
-                            <Link href='#' color='secondary'><li>Bhuvan Gandhi</li></Link>
-                            <Link href='#' color='secondary'><li>Parn Desai</li></Link>
-                            <Link href='#' color='secondary'><li>Shreedhar Bhatt</li></Link>
-                            <Link href='#' color='secondary'><li>Vinay Khilwani</li></Link>
+                            <Link to='/devs/bhuvan-gandhi'><li>Bhuvan Gandhi</li></Link>
+                            <Link to='/devs/parn-desai'><li>Parn Desai</li></Link>
+                            <Link to='/devs/shreedhar-bhatt'><li>Shreedhar Bhatt</li></Link>
+                            <Link to='/devs/vinay-khilwani'><li>Vinay Khilwani</li></Link>
                         </ul>
                     </div>
                 </div>

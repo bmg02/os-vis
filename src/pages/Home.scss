@@ -11,6 +11,10 @@
     padding: 0;
 }
 
+.section-content a {
+    color: $secondaryColor;
+}
+
 .section-content a:first-child li, .small-section-content a:first-child li {
     margin-top: 24px;
 }

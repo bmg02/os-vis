@@ -10,6 +10,27 @@
 @include font('Montserrat', './util/Montserrat/Montserrat-Regular.ttf');
 @include font('Montserrat-Bold', './util/Montserrat/Montserrat-Bold.ttf');
 
+$primaryColor: #FFF; //#3A76C6;
+$primaryColorDark: #EEE;
+$secondaryColor: #505050;
+// $gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
+$inputTextColor: #444;
+// $themeSecondary: #7a74ff;
+
+$xs: 0px;
+$sm: 600px;
+$md: 960px;
+$lg: 1280px;
+$xl: 1920px;
+
+$primary: #FFF;
+$secondary: #505050;
+$danger: #f44336;
+$warning: #DEC716;
+$caution: #e49013;
+$info: #168BDE;
+$success: #379c37;
+
 body {
 	margin: 0;
 	padding: 0;
@@ -46,12 +67,30 @@ body {
 }
 
 .section-div {
-    padding: 60px 0;
+    padding: 40px 0;
+}
+
+.section-margin-left {
+    margin-left: 40px;
+}
+
+a {
+    text-decoration: none;
+    color: $secondaryColor;
+}
+
+a:hover, a:focus {
+    text-decoration: underline;
 }
 
 .section-heading {
     font: 20px Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;
     color: #444;
+    text-transform: capitalize;
+}
+
+.extra-large {
+    font-size: 26px;
 }
 
 .full-height {
@@ -66,27 +105,6 @@ body {
 .flex-space-evenly {
     justify-content: space-evenly;
 }
-
-$primaryColor: #FFF; //#3A76C6;
-$primaryColorDark: #EEE;
-$secondaryColor: #505050;
-// $gradientStyle: linear-gradient(to bottom right, #7a74ff, #1677a6);
-$inputTextColor: #444;
-// $themeSecondary: #7a74ff;
-
-$xs: 0px;
-$sm: 600px;
-$md: 960px;
-$lg: 1280px;
-$xl: 1920px;
-
-$primary: #FFF;
-$secondary: #505050;
-$danger: #f44336;
-$warning: #DEC716;
-$caution: #e49013;
-$info: #168BDE;
-$success: #379c37;
 
 :export {
     primaryColor: #FFF;
@@ -109,5 +127,4 @@ $success: #379c37;
     info: #168BDE;
     caution: #e49013;
     success: #379c37;
-
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import './Header.scss';
 import { HeaderImage } from '../components';
@@ -9,9 +10,9 @@ function Header() {
         <AppBar position='sticky'>
             <Toolbar variant='dense'>
                 <div className='header-image-div'>
-                    <HeaderImage />
+                    <Link to='/'><HeaderImage /></Link>
                 </div>
-                <Typography variant='h4'>OS-VIS</Typography>
+                <Link to='/'><Typography variant='h4'>OS-VIS</Typography></Link>
             </Toolbar>
         </AppBar>
     );
