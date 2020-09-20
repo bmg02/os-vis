@@ -118,6 +118,22 @@ a:hover, a:focus {
     margin-top: 20px;
 }
 
+.margin-10 {
+    margin: 10px;
+}
+
+.margin-20 {
+    margin: 20px;
+}
+
+input[type=number] {
+    -webkit-appearance: none;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 :export {
     primaryColor: #FFF;
     primaryColorDark: #EEE;

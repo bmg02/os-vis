@@ -37,7 +37,14 @@ let theme = responsiveFontSizes(createMuiTheme({
 		h4: {
 			fontFamily: 'Montserrat-Bold',
 			color: '#444'
-		}
+		},
+		fontFamily: [
+			'Montserrat',
+			'Verdana',
+			'Geneva',
+			'Tahoma',
+			'sans-serif'
+		].join(','),
 	}
 }));
 

@@ -1,0 +1,13 @@
+@import '../App.scss';
+
+.input-field {
+    border: none;
+    background: none;
+    outline: none;
+    border-bottom: 2px solid $secondaryColor;
+    // :focus {
+    //     border-color: red;
+    // }
+    font-size: 14px;
+    font-family: inherit;
+}
