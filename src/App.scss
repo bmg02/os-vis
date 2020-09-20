@@ -31,6 +31,10 @@ $caution: #e49013;
 $info: #168BDE;
 $success: #379c37;
 
+* {
+    transition: ease-in 0.2s;
+}
+
 body {
 	margin: 0;
 	padding: 0;

@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import { Drawer, InputField, Switch } from '../components';
+import { HelpOutline } from '@material-ui/icons';
+import './Algo.scss';
 
 function Algo(props) {
 
@@ -20,8 +22,21 @@ function Algo(props) {
                     <div className='margin-20'><Switch checked={ switchState } onChange={ handleChange } label='I/O Bound' /></div>
                     <br/>
                     <div className='margin-10'>
-                        <InputField value='2' type='number' />&nbsp;&nbsp;&nbsp;&nbsp;
+                        <InputField value='2' type='number' onChange={ () => {} } />&nbsp;&nbsp;&nbsp;&nbsp;
                         <span style={{ fontFamily: 'Montserrat-Bold' }}>I/O Times</span>
+                    </div>
+                    <br/>
+                    <div className='full-form-div margin-top-20'>
+                        <ul>
+                            <li><button><div>P. No. - Process Number &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>AT - Arrival Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>BT - Burst Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>IOBT - I/O Burst Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>CT - Completion Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>TAT - Turn Around Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>WT - Waiting Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                            <li><button><div>RT - Response Time &nbsp;</div><HelpOutline className='help-icon' /></button></li>
+                        </ul>
                     </div>
                 </React.Fragment>
             } />

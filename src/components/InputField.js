@@ -14,7 +14,7 @@ import './InputField.scss';
 
 function InputField(props) {
     return (
-        <input type={ check_field(props.type) ? props.type : 'text' } class='input-field' { ...props } style={{ width: props.type === 'number' ? '40px' : '', textAlign: props.type === 'number' ? 'center' : '', border: props.border === 'none' ? 'none' : '', }} maxLength='4' />
+        <input type={ check_field(props.type) ? props.type : 'text' } className='input-field' style={{ width: props.type === 'number' ? '40px' : '', textAlign: props.type === 'number' ? 'center' : '', border: props.border === 'none' ? 'none' : '', }} maxLength='4' { ...props } />
     );
 }
 

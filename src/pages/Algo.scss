@@ -1,0 +1,38 @@
+.full-form-div {
+    font-size: 14px;
+}
+
+.full-form-div ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.full-form-div ul li {
+    padding: 10px;
+}
+
+.full-form-div button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.full-form-div button:hover, .full-form-div button:focus {
+    transform: translateX(3px);
+}
+
+.full-form-div button:hover div, .full-form-div button:focus div, .full-form-div button:hover .help-icon, .full-form-div button:focus .help-icon {
+    color: #777;
+}
+
+.full-form-div div {
+    display: inline-block;
+    vertical-align: top;
+    color: #444;
+}
+
+.help-icon {
+    font-size: 16px !important;
+    color: #444;
+}

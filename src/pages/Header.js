@@ -9,7 +9,7 @@ function Header() {
     return (
         <AppBar position='sticky'>
             <Toolbar variant='dense'>
-                <Link to='/'><Typography variant='h4'>OS-VIS</Typography></Link>
+                <Link to='/' style={{ textDecoration: 'none' }}><Typography variant='h4'>OS-VIS</Typography></Link>
                 {/* <div className='header-image-div'>
                     <Link to='/'><HeaderImage /></Link>
                 </div> */}
