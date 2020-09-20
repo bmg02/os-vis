@@ -71,7 +71,7 @@ body {
 }
 
 .section-div {
-    padding: 40px 0;
+    padding: 40px 0 0;
 }
 
 .section-margin-left {
@@ -81,10 +81,9 @@ body {
 a {
     text-decoration: none;
     color: $secondaryColor;
-}
-
-a:hover, a:focus {
-    text-decoration: underline;
+    &:hover, &:focus {
+        text-decoration: underline;
+    }
 }
 
 .section-heading {
@@ -136,6 +135,10 @@ input[type=number] {
 
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+.float-right {
+    float: right;
 }
 
 :export {

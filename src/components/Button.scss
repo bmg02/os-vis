@@ -1,0 +1,28 @@
+.button-element, .small-button {
+    border: 1px solid #DCDCDC;
+    background: #DCDCDC;
+    padding: 8px;
+    cursor: pointer;
+    &:hover {
+        // box-shadow: 1px 1px 3px -2px black;
+        background: #CDCDCD;
+    }
+    div {
+        display: inline-block;
+        vertical-align: top;
+        font-size: 18px;
+        letter-spacing: 1px;
+        color: #333;
+    }
+    &:hover div, &:focus div {
+        display: inline-block;
+    }
+}
+
+.small-button {
+    float: right;
+    padding: 6px;
+    div {
+        font-size: 14px;
+    }
+}

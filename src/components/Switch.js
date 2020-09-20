@@ -38,7 +38,7 @@ const useStyle = makeStyles(theme => ({
         transition: theme.transitions.create(['background-color', 'border']),
     },
     inputLabel: {
-        marginLeft: '20px',
+        marginRight: '20px',
         fontFamily: 'Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif'
     }
 }));
@@ -60,9 +60,11 @@ function Switch(props) {
                         checked: classes.checked,
                     }}
                     { ...props }
-                />}
+                />
+            }
             classes={{ label: classes.inputLabel }}
             label={ props.label }
+            labelPlacement='start'
         />
     );
 }
