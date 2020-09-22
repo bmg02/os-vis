@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom';
 import './Home.scss';
 
 function Home() {
+
+    React.useEffect(() => {
+        document.title = 'Visualise algorithm animations at OS-VIS';
+    }, []);
+
     return (
         <div className='container-div flex-layout'>
             <div className='section-div grey-div flex-30 full-height'>

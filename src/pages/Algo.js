@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MaterialTable from 'material-table';
+import { IconButton } from '@material-ui/core';
 import { Drawer, InputField, InputFieldWithLabel, Switch, Button } from '../components';
-import { Add, HelpOutline, History, PlayArrow } from '@material-ui/icons';
+import { ArrowDropDown, ArrowDropUp, Close, HelpOutline, History, PlayArrow } from '@material-ui/icons';
 import './Algo.scss';
-import { check_field } from '../util/general';
+import { capitalizeEachWord } from '../util/general';
 
 function Algo(props) {
 
@@ -22,20 +23,30 @@ function Algo(props) {
     
     const [ valueState, setValueState ] = React.useState({
         iotimes: 1,
-        prcsData: [ blankRow ]
+        prcsData: [ blankRow, blankRow ]
     });
 
     const handleValueChange = (e) => {
-        console.log(e.target.value);
+        // let prcses = valueState.prcsData;
+        // prcses.push(blankRow);
+        // setValueState({ ...valueState, prcsData: prcses });
+        // console.log(valueState.prcsData);
+        // for (let i in valueState.prcsData) {
+        //     for (let j in valueState.prcsData[i]) {
+        //         console.log(valueState.prcsData[i][j]);
+        //     }
+        // }
     }
 
-    const handleAddNewRow = () => {
-        let prcses = valueState.prcsData;
-        prcses.push(blankRow);
-        setValueState({ ...valueState, prcsData: prcses });
-    }
+    // const handleAddNewRow = () => {
+        
+    // }
 
     const handleSwitchChange = (e) => setIoBoundState(e.target.checked);
+
+    React.useEffect(() => {
+        document.title = capitalizeEachWord(props.match.params.algo.replace(/-/g, ' ')) + ' at OS-VIS';
+    }, []);
 
 
     return (
@@ -114,7 +125,7 @@ function Algo(props) {
                                 title: 'RT',
                                 field: 'rtime',
                                 cellStyle: { textAlign: 'center', background: '#F7F7F7', border: '1px solid #CDCDCD', padding: '8px' },
-                            },
+                            }
                         ]}
                         data={ valueState.prcsData }
                         options={{
@@ -128,12 +139,39 @@ function Algo(props) {
                                 background: '#DCDCDC',
                                 textAlign: 'center',
                                 fontFamily: 'Montserrat-Bold',
-                                padding: '8px'
+                                padding: '8px',
                             },
+                            actionsCellStyle: {
+                                width: 'max-content'
+                            },
+                            actionsColumnIndex: -1
                         }}
+                        actions={[
+                            {
+                                icon: () => <Close style={{ fontSize: '16px', color: '#D91E2A' }} />,
+                                tooltip: 'Remove',
+                                onClick: (event, rowData) => {
+                                    console.log(event, rowData);
+                                }
+                            },
+                            {
+                                icon: () => <ArrowDropUp style={{ fontSize: '24px', color: '#666' }} />,
+                                tooltip: 'Move up',
+                                onClick: (event, rowData) => {
+                                    console.log(event, rowData);
+                                }
+                            },
+                            {
+                                icon: () => <ArrowDropDown style={{ fontSize: '24px', color: '#666' }} />,
+                                tooltip: 'Move up',
+                                onClick: (event, rowData) => {
+                                    console.log(event, rowData);
+                                }
+                            },
+                        ]}
                     />
                     <br/>
-                    <Button onClick={ handleAddNewRow } size='small'><Add fontSize='small' /></Button>
+                    {/* <Button onClick={ handleAddNewRow } size='small'><Add fontSize='small' /></Button> */}
                     <br/><br/>
                     <Button><div>PLAY&nbsp;&nbsp;</div><PlayArrow style={{ color: '#333' }} /></Button>
                 </div>
