@@ -13,7 +13,7 @@ const useStyle = makeStyles(theme => ({
 
 export function InputField(props) {
     return (
-        <input type={ check_field(props.type) ? props.type : 'text' } className='input-field' style={{ width: props.type === 'number' ? '40px' : '', textAlign: props.type === 'number' ? 'center' : '', border: props.border === 'none' ? 'none' : '', }} { ...props } />
+        <input type={ check_field(props.type) ? props.type : 'text' } className='input-field' style={{ width: props.type === 'number' ? '100%' : '', textAlign: props.type === 'number' ? 'center' : '', border: props.border === 'none' ? 'none' : '', }} { ...props } />
     );
 }
 

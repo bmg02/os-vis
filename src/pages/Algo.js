@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import MaterialTable from 'material-table';
 import { IconButton } from '@material-ui/core';
-import { Drawer, InputField, InputFieldWithLabel, Switch, Button } from '../components';
+import { Drawer, InputField, InputFieldWithLabel, Switch, Button, TableLayout } from '../components';
 import { ArrowDropDown, ArrowDropUp, Close, HelpOutline, History, PlayArrow } from '@material-ui/icons';
 import './Algo.scss';
 import { capitalizeEachWord } from '../util/general';
@@ -21,10 +21,12 @@ function Algo(props) {
         btime3: ''
     };
     
-    const [ valueState, setValueState ] = React.useState({
-        iotimes: 1,
-        prcsData: [ blankRow, blankRow ]
-    });
+    // const [ valueState, setValueState ] = React.useState({
+    //     iotimes: 0,
+    //     prcsData: [ blankRow, blankRow ]
+    // });
+
+    const [ ioTimeValueState, setIoTimeValueState ] = React.useState(0);
 
     const handleValueChange = (e) => {
         // let prcses = valueState.prcsData;
@@ -38,11 +40,17 @@ function Algo(props) {
         // }
     }
 
-    // const handleAddNewRow = () => {
-        
-    // }
+    const handleSwitchChange = (e) => {
+        setIoBoundState(e.target.checked);
+        if (e.target.checked) {
+            if (ioTimeValueState === 0) setIoTimeValueState(1);
+        }
+        else setIoTimeValueState(ioTimeValueState);
+    }
 
-    const handleSwitchChange = (e) => setIoBoundState(e.target.checked);
+    const handleIoTimeChange = (e) => {
+        setIoTimeValueState(e.target.value);
+    }
 
     React.useEffect(() => {
         document.title = capitalizeEachWord(props.match.params.algo.replace(/-/g, ' ')) + ' at OS-VIS';
@@ -56,7 +64,8 @@ function Algo(props) {
                     <div className='section-heading extra-large'>{ props.match.params.algo.replace(/-/g, ' ') }</div>
                     <div className='extra-small margin-top-10'><Link to='/'>Change Algorithm</Link></div>
                     <br/><br/>
-                    <MaterialTable
+                    <TableLayout ioTimes={ ioTimeValueState } />
+                    {/* <MaterialTable
                         style={{
                             maxWidth: '1000px',
                             boxShadow: 'none',
@@ -142,7 +151,7 @@ function Algo(props) {
                                 padding: '8px',
                             },
                             actionsCellStyle: {
-                                width: 'max-content'
+                                width: 'max-content',
                             },
                             actionsColumnIndex: -1
                         }}
@@ -164,12 +173,13 @@ function Algo(props) {
                             {
                                 icon: () => <ArrowDropDown style={{ fontSize: '24px', color: '#666' }} />,
                                 tooltip: 'Move up',
+
                                 onClick: (event, rowData) => {
                                     console.log(event, rowData);
                                 }
                             },
                         ]}
-                    />
+                    /> */}
                     <br/>
                     {/* <Button onClick={ handleAddNewRow } size='small'><Add fontSize='small' /></Button> */}
                     <br/><br/>
@@ -185,8 +195,9 @@ function Algo(props) {
                     <br/><br/>
                     <div><Switch checked={ ioBoundState } onChange={ handleSwitchChange } label='I/O Bound' /></div>
                     <br/>
+                    { ioTimeValueState }
                     <div className='iotimes-div margin-top-20' style={{ display: ioBoundState ? 'block' : 'none' }}>
-                        <InputFieldWithLabel value='2' type='number' onChange={ () => {} } label='I/O Times' />
+                        <InputFieldWithLabel value={ ioTimeValueState } type='number' onChange={ handleIoTimeChange } min='1' label='I/O Times' />
                     </div>
                     <br/><br/>
                     <div className='full-form-div margin-top-20'>

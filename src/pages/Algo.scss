@@ -7,6 +7,7 @@
         overflow: hidden;
         li {
             padding: 10px;
+            transition: ease-in 0.2s;
             &:hover, &:focus {
                 transform: translateX(3px);
             }
