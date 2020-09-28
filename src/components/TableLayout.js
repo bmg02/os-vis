@@ -39,15 +39,7 @@ function TableLayout(props) {
         let obj = {};
         let columnArr = Object.keys(columns);
         for (let col in columnArr) {
-            // if (columnArr[col] === 'ioTimes') {
-            //     for (let i = 1; i <= props.ioTimes; i++) {
-            //         obj['iobtime' + i] = '';
-            //         obj['btime' + i] = '';
-            //     }
-            //     continue;
-            // }
             if (columnArr[col] === 'ioTimes') continue;
-            // if (columnArr[col] === 'pno') obj[columnArr[col]] = rows.length;
             else obj[columnArr[col]] = '';
         }
         return obj;
@@ -58,8 +50,6 @@ function TableLayout(props) {
             ...columns,
             ioTimes: props.ioTimes
         }
-        // let rowArr = Object.keys(columns)
-        //console.log(columns);
     }
     
     const [ columnState, setColumnState ] = React.useState({
@@ -96,20 +86,20 @@ function TableLayout(props) {
         return false;
     }
 
-    const handleValueChange = (e, key, item, pno, rowKey) => {
+    const handleValueChange = (e, rowKey, colItem) => {
+        console.log(e.target.value);
         let data = rowValueState.value;
-        //console.log(data, key, item);
-        data[key][item] = e.target.value;
+        data[rowKey][colItem] = e.target.value;
         setRowValueState({ value: data });
-        if (checkForLastEmptyRow()) checkForEmptyCells(key);
-        // console.log(document.getElementById('inp-' + pno + '-' + rowKey)).focus();
+        if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
     }
 
     const removeRow = (rowKey) => {
-        let data = rowValueState.value;
-        data.splice(rowKey, 1);
-        setRowValueState({ value: data });
-        // rowValueState.value.splice(rowKey, 1);
+        if (rowValueState.value.length > 1) {
+            let data = rowValueState.value;
+            data.splice(rowKey, 1);
+            setRowValueState({ value: data });
+        }
     }
 
     React.useEffect(() => {
@@ -123,22 +113,17 @@ function TableLayout(props) {
                 let rowArr = Object.keys(rowValueState.value[i]);
                 data[i] = rowValueState.value[i];
 
-                let bTimeIndex = rowArr.findIndex(a => { return a === 'btime' });
-
                 // Check of row field exist or not for iobt columns
-                let ioCells = [];
                 for (let j = 1; j <= props.ioTimes; j++) {
                     if (rowArr.findIndex(a => { return a === 'btime' + j }) !== -1) continue;
                     data[i]['iobtime' + j] = '';
                     data[i]['btime' + j] = '';
-                    // ioCells.push({ [  ]: '' }, { [ 'btime' + j ]: '' });
                 }
             }
 
             console.log(data);
             setRowValueState({ value: data });
         }
-        // return () => { console.log('returned'); }
     }, [props.ioTimes]);
 
     return (
@@ -150,13 +135,10 @@ function TableLayout(props) {
                         {
                             Object.keys(columnState).map((item) => {
                                 let ioCells = [];
-                                // console.log(item);
                                 if (item === 'ctime') {
-                                    // if (columns.current[item] > 0) {
-                                        for (let i = 1; i <= props.ioTimes; i++) {
-                                            ioCells.push(<TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>IOBT</TableCell>, <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>BT</TableCell>);
-                                        }
-                                    // }
+                                    for (let i = 1; i <= props.ioTimes; i++) {
+                                        ioCells.push(<TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>IOBT</TableCell>, <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>BT</TableCell>);
+                                    }
                                 }
                                 ioCells.push(<TableCell key={ item } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>{ columnState[item] }</TableCell>);
                                 return ioCells;
@@ -175,27 +157,29 @@ function TableLayout(props) {
                                     {
                                         Object.keys(columnState).map(colItem => {
                                             let rowCells = [];
-                                            console.log(colItem, rowItem);
                                             if (colItem === 'ctime') {
                                                 for (let i = 1; i <= props.ioTimes; i++) {
                                                     rowCells.push(
-                                                        <TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>
-                                                            <InputField type='number' value={ rowItem[ 'iobtime' + i ] } key={ 'inp-' + colItem + rowKey } id={ 'inp-' + rowKey + '-0' } min='0' />
+                                                        <TableCell key={ 'iobtime' + i } variant='head' classes={{ root: classes.tableCell }}>
+                                                            <InputField type='number' onChange={ (e) => handleValueChange(e, rowKey, 'iobtime' + i) } value={ rowItem['iobtime' + i] } border='none' key={ 'inp-' + colItem + rowKey } id={ 'inp-' + rowKey + '-0' } min='0' />
                                                         </TableCell>,
-                                                        <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>
-                                                            <InputField type='number' value={ 'btime' + i } key={ 'inp-' + colItem + rowKey } id={ 'inp-' + rowKey + '-0' } min='0' />
+                                                        <TableCell key={ 'btime' + i } variant='head' classes={{ root: classes.tableCell }}>
+                                                            <InputField type='number' onChange={ (e) => handleValueChange(e, rowKey, 'btime' + i) } border='none' value={ rowItem['btime' + i] } key={ 'inp-' + colItem + rowKey } id={ 'inp-' + rowKey + '-0' } min='0' />
                                                         </TableCell>
                                                     );
                                                 }
                                             }
                                             rowCells.push(
-                                                <TableCell key={ 'cell-' + colItem + '-' + rowKey }>
-                                                    <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e) } key={ 'inp-' + colItem + '-' + rowKey } id={ 'inp-' + colItem + '-' + rowKey } min='0' />
+                                                <TableCell key={ 'cell-' + colItem + '-' + rowKey } classes={{ root: classes.tableCell }}>
+                                                    <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min='0' />
                                                 </TableCell>
                                             );
                                             return rowCells;
                                         })
                                     }
+                                    <TableCell classes={{ root: classes.actionTableCell }}>
+                                        <IconButton style={{ padding: '3px' }} onClick={ () => removeRow(rowKey) }><Close style={{ fontSize: '18px', color: '#D91E2A' }} /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             )
                         })
@@ -207,44 +191,3 @@ function TableLayout(props) {
 }
 
 export default TableLayout;
-
-// Object.keys(columnState).map(colItem => {
-//     let rowCells = [];
-//     if (colItem === 'ctime') {
-//         for (let i = 1; i <= props.ioTimes; i++) {
-//             rowCells.push(
-//                 <TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>
-//                     <InputField type='number' value={ rowItem[colItem] } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } min='0' readOnly={ true } />
-//                 </TableCell>,
-//                 <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>
-//                     <InputField type='number' value={ rowItem[colItem] } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } min='0' readOnly={ true } />
-//                 </TableCell>
-//             );
-//         }
-//     }
-//     rowCells.push(
-//         <TableCell key={ 'cell-' + colItem + '-' + rowKey }>
-//             <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e) } key={ 'inp-' + colItem + '-' + rowKey } id={ 'inp-' + colItem + '-' + rowKey } min='0' />
-//         </TableCell>
-//     );
-//     return rowCells;
-// })
-
-
-// return (
-//     <TableRow key={ 'row-' + key }>
-//         <TableCell key={ 'rowcell-' + key + '-0' } classes={{ root: classes.tableCell }}>
-//             <InputField type='number' value={ key + 1 } border='none' key={ 'inp-' + key + '-0' } id={ 'inp-' + key + '-0' } min='0' readOnly={ true } />
-//         </TableCell>
-//         {
-//             Object.keys(row).map((rowItem, rowKey) => (
-//                 <TableCell key={ 'rowcell-' + row[rowItem] + '-' + (rowKey + 1) } classes={{ root: classes.tableCell }}>
-//                     <InputField type='number' value={ row[rowItem] } onChange={ (e) => handleValueChange(e, key, rowItem, row.pno, (rowKey + 1)) } border='none' key={ 'inp-' + row.pno + '-' + (rowKey + 1) } id={ 'inp-' + row.pno + '-' + (rowKey + 1) } min='0' />
-//                 </TableCell>
-//             ))
-//         }
-//         <TableCell classes={{ root: classes.actionTableCell }}>
-//             <IconButton style={{ padding: '3px' }} onClick={ () => removeRow(key) }><Close style={{ fontSize: '18px', color: '#D91E2A' }} /></IconButton>
-//         </TableCell>
-//     </TableRow>
-// );
