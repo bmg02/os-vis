@@ -44,13 +44,6 @@ function TableLayout(props) {
         }
         return obj;
     }
-
-    const updateData = (columns) => {
-        columns = {
-            ...columns,
-            ioTimes: props.ioTimes
-        }
-    }
     
     const [ columnState, setColumnState ] = React.useState({
         // pno: 'P. No.',
