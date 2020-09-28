@@ -45,7 +45,7 @@ function Algo(props) {
         if (e.target.checked) {
             if (ioTimeValueState === 0) setIoTimeValueState(1);
         }
-        else setIoTimeValueState(ioTimeValueState);
+        else setIoTimeValueState(0);
     }
 
     const handleIoTimeChange = (e) => {
@@ -195,7 +195,6 @@ function Algo(props) {
                     <br/><br/>
                     <div><Switch checked={ ioBoundState } onChange={ handleSwitchChange } label='I/O Bound' /></div>
                     <br/>
-                    { ioTimeValueState }
                     <div className='iotimes-div margin-top-20' style={{ display: ioBoundState ? 'block' : 'none' }}>
                         <InputFieldWithLabel value={ ioTimeValueState } type='number' onChange={ handleIoTimeChange } min='1' label='I/O Times' />
                     </div>
