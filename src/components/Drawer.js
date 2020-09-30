@@ -12,15 +12,15 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         paddingLeft: '20px',
-        width: '260px',
+        width: '280px',
         zIndex: '100',
         background: '#F1F1F1'
     },
     drawerContainer: {
         overflow: 'auto',
     },
-    paperAnchorDockedRight: {
-        borderLeft: 'none'
+    paperAnchorDockedLeft: {
+        borderRight: 'none'
     }
 }));
 
@@ -34,7 +34,7 @@ function Drawer(props) {
             variant={ check_field(props.variant) ? props.variant : 'permanent' }
             classes={{
                 paper: classes.drawerPaper,
-                paperAnchorDockedRight: classes.paperAnchorDockedRight
+                paperAnchorDockedLeft: classes.paperAnchorDockedLeft
             }}
             anchor={ check_field(props.anchor) ? props.anchor : 'right' }
         >

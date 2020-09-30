@@ -4,7 +4,7 @@ import './Button.scss';
 
 function Button(props) {
     return (
-        <button className={'button-element' + (props.size === 'small' ? ' small-button' : '') } { ...props }>{ props.children }</button>
+        <button className={'button-element' + (props.size === 'small' ? ' small-button ' : ' ') + props.classNames } { ...props }>{ props.children }</button>
     );
 }
 

@@ -5,6 +5,9 @@ import './Header.scss';
 import { HeaderImage } from '../components';
 
 function Header() {
+    React.useEffect(() => {
+        console.log();
+    }, []);
 
     return (
         <AppBar position='sticky'>
