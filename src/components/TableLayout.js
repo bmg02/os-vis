@@ -14,8 +14,8 @@ const useStyle = makeStyles(theme => ({
     },
     headerCell: {
         fontFamily: 'Montserrat-Bold',
-        minWidth: '60px',
-        maxWidth: '90px',
+        minWidth: '70px',
+        maxWidth: '110px',
         padding: '7px !important',
         background: '#DCDCDC',
     },
@@ -23,7 +23,8 @@ const useStyle = makeStyles(theme => ({
         textAlign: 'center',
         padding: '0px',
         border: '1px solid #DCDCDC',
-        maxWidth: '100px'
+        maxWidth: '100px',
+        minWidth: '80px'
     },
     actionTableCell: {
         paddingLeft: '20px',
@@ -35,25 +36,10 @@ const useStyle = makeStyles(theme => ({
 
 function TableLayout(props) {
 
+    const { rowValueState, setRowValueState } = props;
     const classes = useStyle();
 
-    const createData = (columns, rows) => {
-        let obj = {};
-        let columnArr = Object.keys(columns);
-        for (let col in columnArr) {
-            if (columnArr[col] === 'ioTimes') continue;
-            else {
-                // if (columnArr[col] === 'btime') obj[columnArr[col]] = '1';
-                // else obj[columnArr[col]] = '';
-                obj[columnArr[col]] = '';
-            }
-        }
-        obj['ioTimes'] = '1';
-        return obj;
-    }
-    
-    const [ columnState, setColumnState ] = React.useState({
-        // pno: 'P. No.',
+    const columnState = React.useRef({
         atime: 'AT',
         btime: 'BT',
         ctime: 'CT',
@@ -62,14 +48,29 @@ function TableLayout(props) {
         rtime: 'RT'
     });
 
-    const [ rowValueState, setRowValueState ] = React.useState({ value: [ createData(columnState, 1) ] });
+    const createData = () => {
+        let obj = {};
+        let columnArr = Object.keys(columnState.current);
+        for (let col in columnArr) {
+            if (columnArr[col] === 'ioTimes') continue;
+            else {
+                // if (columnArr[col] === 'btime') obj[columnArr[col]] = '1';
+                // else obj[columnArr[col]] = '';
+                obj[columnArr[col]] = '';
+            }
+        }
+        obj['ioTimes'] = '0';
+        return obj;
+    }
+
+    // const [ rowValueState, setRowValueState ] = React.useState({ value: [ createData(columnState.current, 1) ] });
 
     const checkForEmptyCells = (rowKey) => {
         let rowArr = Object.keys(rowValueState.value[rowKey]);
         for (let r in rowArr) {
             if (rowValueState.value[rowKey][rowArr[r]] !== '') {
                 let data = rowValueState.value;
-                data.push(createData(columnState, rowValueState.value.length + 1));
+                data.push(createData());
                 break;
             }
         }
@@ -78,7 +79,9 @@ function TableLayout(props) {
     const checkForLastEmptyRow = () => {
         let lastRowIndex = rowValueState.value.length - 1;
         let rowArr = Object.keys(rowValueState.value[lastRowIndex]);
+        console.log(rowArr);
         for (let r in rowArr) {
+            if (rowArr[r] === 'ioTimes') continue;
             if (rowValueState.value[lastRowIndex][rowArr[r]] !== '') {
                 return true;
             }
@@ -86,12 +89,27 @@ function TableLayout(props) {
         return false;
     }
 
-    const handleValueChange = (e, rowKey, colItem) => {
-        console.log(e.target.value);
+    const handleValueChange = (e, rowKey, colItem, eleIndex = null) => {
         let data = rowValueState.value;
-        data[rowKey][colItem] = e.target.value;
+        if (colItem === 'ioTimes') {
+            data[rowKey][colItem] = e.target.value;
+            for (let i = 0; i < parseInt(e.target.value); i++) {
+                data[rowKey]['iobtime' + i] = '';
+                data[rowKey]['btime' + i] = '';
+            }
+        }
+        else if (eleIndex !== null && (colItem === 'btime' || colItem === 'iobtime')) data[rowKey][colItem + eleIndex] = e.target.value;
+        else data[rowKey][colItem] = e.target.value;
         setRowValueState({ value: data });
-        if (rowValueState.value.length < 50) if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
+        if (colItem !== 'ioTimes' && rowValueState.value.length < 50) if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
+    }
+
+    const getArr = (size) => {
+        let arr = [];
+        for (let i = 0; i < parseInt(size); i++) {
+            arr.push('');
+        }
+        return arr;
     }
 
     const removeRow = (rowKey) => {
@@ -102,7 +120,9 @@ function TableLayout(props) {
         }
     }
 
-    let arr = [];
+    React.useEffect(() => {
+        setRowValueState({ value: [ createData() ] });
+    }, []);
 
     // React.useEffect(() => {
     //     if (props.ioTimes > 0) {
@@ -146,14 +166,14 @@ function TableLayout(props) {
                         }
                         <TableCell key={ 'header-pno' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>P. No.</TableCell>
                         {
-                            Object.keys(columnState).map((item) => {
+                            Object.keys(columnState.current).map((item) => {
                                 let ioCells = [];
                                 // if (item === 'ctime') {
                                 //     for (let i = 1; i <= props.ioTimes; i++) {
                                 //         ioCells.push(<TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>IOBT</TableCell>, <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>BT</TableCell>);
                                 //     }
                                 // }
-                                ioCells.push(<TableCell key={ 'header-' + item } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>{ columnState[item] }</TableCell>);
+                                ioCells.push(<TableCell key={ 'header-' + item } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>{ columnState.current[item] }</TableCell>);
                                 return ioCells;
                             })
                         }
@@ -166,8 +186,8 @@ function TableLayout(props) {
                                 <TableRow key={ 'row-' + rowKey }>
                                     {
                                         props.ioBound ?
-                                            <TableCell key={ 'rowcell-iotime-' + rowKey } classes={{ root: classes.tableCell }}>
-                                                <InputField type='number' value={ rowValueState.value[rowKey]['ioTimes'] } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'ioTimes') } min='0' />
+                                            <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>
+                                                <InputField type='number' value={ rowValueState.value[rowKey]['ioTimes'] } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'ioTimes') } min='0' max='10' />
                                             </TableCell>
                                         :
                                             <TableCell style={{ display: 'none' }}></TableCell>
@@ -176,7 +196,7 @@ function TableLayout(props) {
                                         <InputField type='number' value={ rowKey } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } min='0' readOnly={ true } />
                                     </TableCell>
                                     {
-                                        Object.keys(columnState).map(colItem => {
+                                        Object.keys(columnState.current).map(colItem => {
                                             let rowCells = [];
                                             // if (colItem === 'ctime') {
                                             //     for (let i = 1; i <= props.ioTimes; i++) {
@@ -193,20 +213,20 @@ function TableLayout(props) {
                                             rowCells.push(
                                                 <TableCell key={ 'cell-' + colItem + '-' + rowKey } classes={{ root: classes.tableCell }} style={{ maxWidth: 'max-content' }}>
                                                     {
-                                                        colItem === 'btime' && props.ioBound ?
+                                                        colItem === 'btime' && props.ioBound && parseInt(rowValueState.value[rowKey]['ioTimes']) > 0 ?
                                                             <Table>
                                                                 <TableBody>
                                                                     <TableRow>
                                                                         {
-                                                                            new Array(rowValueState.value[rowKey]['ioTimes']).map((ele) => {
-                                                                                console.log(rowKey, rowValueState.value[rowKey]['ioTimes']);
+                                                                            getArr(rowValueState.value[rowKey]['ioTimes']).map((ele, eleIndex) => {
+                                                                                console.log(ele, eleIndex, rowKey, rowValueState.value[rowKey]['ioTimes']);
                                                                                 return (
-                                                                                    <React.Fragment>
-                                                                                        <TableCell key={ 'iobtime0' } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
-                                                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' placeholder='IOBT' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } max='5000' />
+                                                                                    <React.Fragment key={eleIndex}>
+                                                                                        <TableCell key={ 'rowcell-iobtime-' + rowKey + '-' + eleIndex } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px', marginLeft: eleIndex === 0 ? '' : '5px' }}>
+                                                                                            <InputField type='number' value={ rowItem['iobtime' + eleIndex] } onChange={ (e) => handleValueChange(e, rowKey, 'iobtime', eleIndex) } key={ 'inp-iobtime-' + rowKey + '-' + eleIndex } border='none' placeholder='IOBT' id={ 'inp-iobtime-' + rowKey + '-' + eleIndex } min='1' max='5000' />
                                                                                         </TableCell>
-                                                                                        <TableCell key={ 'btime0' } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
-                                                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' placeholder='BT' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } max='5000' />
+                                                                                        <TableCell key={ 'rowcell-btime-' + rowKey + '-' + eleIndex } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
+                                                                                            <InputField type='number' value={ rowItem['btime' + eleIndex] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', eleIndex) } key={ 'inp-btime-' + rowKey + '-' + eleIndex } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-' + eleIndex } min='1' max='5000' />
                                                                                         </TableCell>
                                                                                     </React.Fragment>
                                                                                 )
@@ -224,14 +244,14 @@ function TableLayout(props) {
                                                                 </TableBody>
                                                             </Table>
                                                         :
-                                                            ''
+                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } readOnly={ colItem !== 'atime' && colItem !== 'btime' ? true : false } max='5000' />
                                                     }
-                                                    {
+                                                    {/* {
                                                         colItem === 'btime' && props.ioBound ?
                                                             ''
                                                         :
                                                             <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } max='5000' />
-                                                    }
+                                                    } */}
                                                 </TableCell>
                                             );
                                             return rowCells;

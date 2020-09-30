@@ -20,6 +20,8 @@ function Algo(props) {
         iobtime2: '',
         btime3: ''
     };
+
+    const [ tableValueState, setTableValueState ] = React.useState({ value: [] });
     
     // const [ valueState, setValueState ] = React.useState({
     //     iotimes: 0,
@@ -48,9 +50,9 @@ function Algo(props) {
         // else setIoTimeValueState(0);
     }
 
-    // const handleIoTimeChange = (e) => {
-    //     if (parseInt(e.target.value) <= 10) setIoTimeValueState(e.target.value);
-    // }
+    const getTableValues = () => {
+        console.log(tableValueState);
+    }
 
     React.useEffect(() => {
         document.title = capitalizeEachWord(props.match.params.algo.replace(/-/g, ' ')) + ' at OS-VIS';
@@ -96,7 +98,7 @@ function Algo(props) {
                     {/* <br/><br/> */}
                     <center>
                     <div style={{ width: 'max-content' }}>
-                        <TableLayout ioBound={ ioBoundState } />
+                        <TableLayout ioBound={ ioBoundState } rowValueState={ tableValueState } setRowValueState={ setTableValueState }  />
                         {/* <MaterialTable
                             style={{
                                 maxWidth: '1000px',
@@ -215,7 +217,7 @@ function Algo(props) {
                         <br/>
                         {/* <Button onClick={ handleAddNewRow } size='small'><Add fontSize='small' /></Button> */}
                         <br/><br/>
-                        <Button classNames='float-right'><div>PLAY&nbsp;&nbsp;</div><PlayArrow style={{ color: '#333' }} /></Button>
+                        <Button classnames='float-right' onClick={ getTableValues }><div>PLAY&nbsp;&nbsp;</div><PlayArrow style={{ color: '#333' }} /></Button>
                         <br/><br/>
                         <div className='section-div'>
                             <div className='section-heading text-left'>
