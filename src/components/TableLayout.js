@@ -91,15 +91,23 @@ function TableLayout(props) {
 
     const handleValueChange = (e, rowKey, colItem, eleIndex = null) => {
         let data = rowValueState.value;
+        let val = e.target.value;
+        console.log(val);
+        if (colItem !== 'atime' && (val < 1 || val >= 5000)) val = 1;
+        console.log(val);
         if (colItem === 'ioTimes') {
-            data[rowKey][colItem] = e.target.value;
-            for (let i = 0; i < parseInt(e.target.value); i++) {
+            if (val < 0 || val > 10) val = 0;
+            data[rowKey][colItem] = parseInt(val);
+            for (let i = 1; i < parseInt(val); i++) {
                 data[rowKey]['iobtime' + i] = '';
                 data[rowKey]['btime' + i] = '';
             }
         }
-        else if (eleIndex !== null && (colItem === 'btime' || colItem === 'iobtime')) data[rowKey][colItem + eleIndex] = e.target.value;
-        else data[rowKey][colItem] = e.target.value;
+        else if (eleIndex !== null && (colItem === 'btime' || colItem === 'iobtime')) {
+            console.log('here');
+            data[rowKey][colItem + eleIndex] = val;
+        }
+        else data[rowKey][colItem] = val;
         setRowValueState({ value: data });
         if (colItem !== 'ioTimes' && rowValueState.value.length < 50) if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
     }
@@ -217,16 +225,18 @@ function TableLayout(props) {
                                                             <Table>
                                                                 <TableBody>
                                                                     <TableRow>
+                                                                        <TableCell key={ 'rowcell-btime-' + rowKey + '' } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px'}}>
+                                                                            <InputField type='number' value={ rowItem['btime0'] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', 0) } key={ 'inp-btime-' + rowKey + '-0' } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-0' } min='1' max='5000' />
+                                                                        </TableCell>
                                                                         {
                                                                             getArr(rowValueState.value[rowKey]['ioTimes']).map((ele, eleIndex) => {
-                                                                                console.log(ele, eleIndex, rowKey, rowValueState.value[rowKey]['ioTimes']);
                                                                                 return (
-                                                                                    <React.Fragment key={eleIndex}>
-                                                                                        <TableCell key={ 'rowcell-iobtime-' + rowKey + '-' + eleIndex } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px', marginLeft: eleIndex === 0 ? '' : '5px' }}>
-                                                                                            <InputField type='number' value={ rowItem['iobtime' + eleIndex] } onChange={ (e) => handleValueChange(e, rowKey, 'iobtime', eleIndex) } key={ 'inp-iobtime-' + rowKey + '-' + eleIndex } border='none' placeholder='IOBT' id={ 'inp-iobtime-' + rowKey + '-' + eleIndex } min='1' max='5000' />
+                                                                                    <React.Fragment key={(eleIndex + 1)}>
+                                                                                        <TableCell key={ 'rowcell-iobtime-' + rowKey + '-' + (eleIndex + 1) } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px', marginLeft: (eleIndex + 1) === 0 ? '' : '5px' }}>
+                                                                                            <InputField type='number' value={ rowItem['iobtime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'iobtime', (eleIndex + 1)) } key={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='IOBT' id={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
                                                                                         </TableCell>
-                                                                                        <TableCell key={ 'rowcell-btime-' + rowKey + '-' + eleIndex } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
-                                                                                            <InputField type='number' value={ rowItem['btime' + eleIndex] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', eleIndex) } key={ 'inp-btime-' + rowKey + '-' + eleIndex } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-' + eleIndex } min='1' max='5000' />
+                                                                                        <TableCell key={ 'rowcell-btime-' + rowKey + '-' + (eleIndex + 1) } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
+                                                                                            <InputField type='number' value={ rowItem['btime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', (eleIndex + 1)) } key={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
                                                                                         </TableCell>
                                                                                     </React.Fragment>
                                                                                 )

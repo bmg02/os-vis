@@ -1,46 +1,64 @@
-.full-form-div {
-    font-size: 14px;
-    ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        li {
-            padding: 10px;
-            transition: ease-in 0.2s;
-            &:hover, &:focus {
-                transform: translateX(3px);
-            }
-        }
-    }
-    button {
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        &:hover div, &:focus div, &:hover .help-icon, &:focus .help-icon {
-            color: #777;
-        }
-    }
-    div {
-        display: inline-block;
-        vertical-align: top;
-        color: #444;
-    }
+// .full-form-div {
+//     font-size: 14px;
+//     ul {
+//         list-style: none;
+//         margin: 0;
+//         padding: 0;
+//         overflow: hidden;
+//         li {
+//             padding: 10px;
+//             transition: ease-in 0.2s;
+//             &:hover, &:focus {
+//                 transform: translateX(3px);
+//             }
+//         }
+//     }
+//     button {
+//         border: none;
+//         background: transparent;
+//         cursor: pointer;
+//         &:hover div, &:focus div, &:hover .help-icon, &:focus .help-icon {
+//             color: #777;
+//         }
+//     }
+//     div {
+//         display: inline-block;
+//         vertical-align: top;
+//         color: #444;
+//     }
+// }
+
+// .help-icon {
+//     font-size: 16px !important;
+//     color: #444;
+// }
+
+// .iotimes-div {
+//     animation: entryAnime 0.5s forwards;
+//     animation-direction: alternate;
+// }
+
+// @keyframes entryAnime {
+//     from {
+//         transform: translateY(-50px);
+//         opacity: 0;
+//     }
+//     to {
+//         opacity: 1;
+//         transform: translateY(0);
+//     }
+// }
+
+
+#visualAnimeDiv {
+    display: none;
+    max-width: 1000px;
+    animation: visualEntryAnime 0.7s forwards;
 }
 
-.help-icon {
-    font-size: 16px !important;
-    color: #444;
-}
-
-.iotimes-div {
-    animation: entryAnime 0.5s forwards;
-    animation-direction: alternate;
-}
-
-@keyframes entryAnime {
+@keyframes visualEntryAnime {
     from {
-        transform: translateY(-50px);
+        transform: translateY(-30px);
         opacity: 0;
     }
     to {
