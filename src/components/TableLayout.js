@@ -8,6 +8,7 @@ const useStyle = makeStyles(theme => ({
         borderRadius: '0px',
         maxWidth: '1000px',
         boxShadow: 'none',
+        padding: '2px'
     },
     headerRoot: {
         background: '#DCDCDC',
@@ -21,16 +22,30 @@ const useStyle = makeStyles(theme => ({
     },
     tableCell: {
         textAlign: 'center',
-        padding: '0px',
+        padding: '7px',
         border: '1px solid #DCDCDC',
         maxWidth: '100px',
         minWidth: '80px'
     },
     actionTableCell: {
-        paddingLeft: '20px',
         textAlign: 'center',
-        padding: '7px',
-        border: 'none'
+        padding: '5px',
+        position: 'sticky',
+        top: '0',
+        left: '0',
+        transform: 'translate(-2px, 0px)',
+        zIndex: '11100',
+        background: '#FFF',
+        border: '1px solid #FFF'
+    },
+    headerDeleteCell: {
+        position: 'sticky',
+        top: '0',
+        left: '0',
+        transform: 'translate(-2px, 0px)',
+        zIndex: '11100',
+        background: '#FFF',
+        border: '1px solid #FFF'
     }
 }));
 
@@ -162,17 +177,18 @@ function TableLayout(props) {
 
     return (
         <TableContainer component={ Paper } classes={{ root: classes.tablePaperRoot }}>
-            <Table>
+            <Table cellSpacing='2px'>
                 <TableHead classes={{ root: classes.headerRoot }}>
-                    <TableRow>
+                    <TableRow style={{ background: '#FFF' }}>
+                        <TableCell key={ 'header-delete-row' } variant='head' classes={{ head: classes.headerDeleteCell, root: classes.tableCell }} style={{ display: rowValueState.value.length < 2 ? 'none' : 'table-cell' }}></TableCell>
                         {
                             props.ioBound ?
-                                <TableCell key={ 'iotimes' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>I/O Times</TableCell>
+                                <TableCell key={ 'iotimes' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>I/O Times</TableCell>
                             :
                                 <TableCell style={{ display: 'none' }}></TableCell>
 
                         }
-                        <TableCell key={ 'header-pno' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>P. No.</TableCell>
+                        <TableCell key={ 'header-pno' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>P. No.</TableCell>
                         {
                             Object.keys(columnState.current).map((item) => {
                                 let ioCells = [];
@@ -181,7 +197,7 @@ function TableLayout(props) {
                                 //         ioCells.push(<TableCell key={ 'iobtime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>IOBT</TableCell>, <TableCell key={ 'btime' + i } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>BT</TableCell>);
                                 //     }
                                 // }
-                                ioCells.push(<TableCell key={ 'header-' + item } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }}>{ columnState.current[item] }</TableCell>);
+                                ioCells.push(<TableCell key={ 'header-' + item } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>{ columnState.current[item] }</TableCell>);
                                 return ioCells;
                             })
                         }
@@ -191,7 +207,13 @@ function TableLayout(props) {
                     {
                         rowValueState.value.map((rowItem, rowKey) => {
                             return (
-                                <TableRow key={ 'row-' + rowKey }>
+                                <TableRow key={ 'row-' + rowKey } classes={{ root: classes.tableRowRoot }}>
+                                    {/* FOR REMOVE BUTTON */}
+                                    <TableCell classes={{ root: classes.actionTableCell }} style={{ display: rowValueState.value.length < 2 ? 'none' : 'table-cell' }}>
+                                        <IconButton style={{ padding: '3px' }} onClick={ () => removeRow(rowKey) } disabled={ rowValueState.value.length < 2 }>
+                                            <Close style={{ fontSize: '18px', color: '#D91E2A', opacity: rowValueState.value.length > 1 ? '1' : '0' }} />
+                                        </IconButton>
+                                    </TableCell>
                                     {
                                         props.ioBound ?
                                             <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>
@@ -219,7 +241,7 @@ function TableLayout(props) {
                                             //     }
                                             // }
                                             rowCells.push(
-                                                <TableCell key={ 'cell-' + colItem + '-' + rowKey } classes={{ root: classes.tableCell }} style={{ maxWidth: 'max-content' }}>
+                                                <TableCell key={ 'cell-' + colItem + '-' + rowKey } classes={{ root: classes.tableCell }} style={{ maxWidth: 'max-content', padding: '0' }}>
                                                     {
                                                         colItem === 'btime' && props.ioBound && parseInt(rowValueState.value[rowKey]['ioTimes']) > 0 ?
                                                             <Table>
@@ -254,7 +276,7 @@ function TableLayout(props) {
                                                                 </TableBody>
                                                             </Table>
                                                         :
-                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } readOnly={ colItem !== 'atime' && colItem !== 'btime' ? true : false } max='5000' />
+                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } readOnly={ colItem !== 'atime' && colItem !== 'btime' ? true : false } />
                                                     }
                                                     {/* {
                                                         colItem === 'btime' && props.ioBound ?
@@ -267,13 +289,6 @@ function TableLayout(props) {
                                             return rowCells;
                                         })
                                     }
-
-                                    {/* FOR REMOVE BUTTON */}
-                                    <TableCell classes={{ root: classes.actionTableCell }}>
-                                        <IconButton style={{ padding: '3px' }} onClick={ () => removeRow(rowKey) } disabled={ rowValueState.value.length < 2 }>
-                                            <Close style={{ fontSize: '18px', color: '#D91E2A', opacity: rowValueState.value.length > 1 ? '1' : '0' }} />
-                                        </IconButton>
-                                    </TableCell>
                                 </TableRow>
                             )
                         })

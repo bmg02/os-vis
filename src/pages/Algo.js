@@ -11,6 +11,10 @@ const useStyle = makeStyles(theme => ({
     menuItemRoot: {
         padding: '8px 16px',
         fontSize: '14px'
+    },
+    avgsDiv: {
+        display: 'inline-block',
+        margin: '0 40px',
     }
 }));
 
@@ -28,8 +32,10 @@ function Algo(props) {
         running: [],
         waiting: [],
         ioProcess: [],
+        avgTat: '',
+        avgWt: '',
+        avgRt: ''
     });
-
     const handleChangeAlgoOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -46,7 +52,7 @@ function Algo(props) {
 
     const getVisualAnimation = () => {
         document.getElementById('visualAnimeDiv').style.display = 'inline-block';
-        performCalculation(tableValueState, tableAnimeValueState, setTableAnimeValueState);
+        performCalculation(tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState);
     }
 
     React.useEffect(() => {
@@ -120,7 +126,13 @@ function Algo(props) {
                         <br/>
                         <br/><br/>
                         <Button classnames='float-right' onClick={ getVisualAnimation }><div>PLAY&nbsp;&nbsp;</div><PlayArrow style={{ color: '#333' }} /></Button>
+                        <div style={{ clear: 'both' }}></div>
                         <br/><br/>
+                        <div style={{ display: tableAnimeValueState.avgTat !== '' ? 'block' : 'none' }}>
+                            <div className={ classes.avgsDiv }>Avg. TAT: { tableAnimeValueState.avgTat }</div>
+                            <div className={ classes.avgsDiv }>Avg. WT: { tableAnimeValueState.avgWt }</div>
+                            <div className={ classes.avgsDiv }>Avg. RT: { tableAnimeValueState.avgRt }</div>
+                        </div>
                         <div className='section-div'>
                             <div className='section-heading text-left'>
                                 CPU Scheduling
