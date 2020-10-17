@@ -491,7 +491,9 @@ export function performCalculation(rowValueState, setRowValueState, visualState,
             ...visualState,
             avgTat: avg_tat,
             avgWt: avg_wt,
-            avgRt: avg_rt
+            avgRt: avg_rt,
+            cpuUtil: cpu_util,
+            throughput: n / (curr_time - 1)
         })
         setRowValueState({ value: valuesRows });
 

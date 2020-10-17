@@ -14,7 +14,7 @@ const useStyle = makeStyles(theme => ({
     },
     avgsDiv: {
         display: 'inline-block',
-        margin: '0 40px',
+        margin: '12px 40px',
     }
 }));
 
@@ -34,7 +34,9 @@ function Algo(props) {
         ioProcess: [],
         avgTat: '',
         avgWt: '',
-        avgRt: ''
+        avgRt: '',
+        cpuUtil: '',
+        throughput: ''
     });
     const handleChangeAlgoOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -129,9 +131,12 @@ function Algo(props) {
                         <div style={{ clear: 'both' }}></div>
                         <br/><br/>
                         <div style={{ display: tableAnimeValueState.avgTat !== '' ? 'block' : 'none' }}>
-                            <div className={ classes.avgsDiv }>Avg. TAT: { tableAnimeValueState.avgTat }</div>
-                            <div className={ classes.avgsDiv }>Avg. WT: { tableAnimeValueState.avgWt }</div>
-                            <div className={ classes.avgsDiv }>Avg. RT: { tableAnimeValueState.avgRt }</div>
+                            <div className={ classes.avgsDiv }>Avg. TAT: { parseFloat(tableAnimeValueState.avgTat).toFixed(3) }</div>
+                            <div className={ classes.avgsDiv }>Avg. WT: { parseFloat(tableAnimeValueState.avgWt).toFixed(3) }</div>
+                            <div className={ classes.avgsDiv }>Avg. RT: { parseFloat(tableAnimeValueState.avgRt).toFixed(3) }</div>
+                            <br/>
+                            <div className={ classes.avgsDiv }>CPU Utilization: { parseFloat(tableAnimeValueState.cpuUtil).toFixed(3) }</div>
+                            <div className={ classes.avgsDiv }>Throughput: { parseFloat(tableAnimeValueState.throughput).toFixed(3) }</div>
                         </div>
                         <div className='section-div'>
                             <div className='section-heading text-left'>
