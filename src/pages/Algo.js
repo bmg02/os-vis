@@ -38,6 +38,9 @@ function Algo(props) {
         cpuUtil: '',
         throughput: ''
     });
+
+    const [ timeState, setTimeState ] = React.useState('');
+
     const handleChangeAlgoOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -54,7 +57,7 @@ function Algo(props) {
 
     const getVisualAnimation = () => {
         document.getElementById('visualAnimeDiv').style.display = 'inline-block';
-        performCalculation(tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState);
+        performCalculation(tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState, setTimeState);
     }
 
     React.useEffect(() => {
@@ -139,9 +142,15 @@ function Algo(props) {
                             <div className={ classes.avgsDiv }>Throughput: { parseFloat(tableAnimeValueState.throughput).toFixed(3) }</div>
                         </div>
                         <div className='section-div'>
-                            <div className='section-heading text-left'>
+                            <div className='section-heading text-left' style={{ float: 'left' }}>
                                 CPU Scheduling
                             </div>
+                            {
+                                timeState !== '' ?
+                                    <div style={{ float: 'right', fontFamily: 'Montserrat-Bold', fontSize: '14px' }}>Time: {timeState}</div>
+                                :
+                                    ''
+                            }
                         </div>
                         <br/><br/>
                         

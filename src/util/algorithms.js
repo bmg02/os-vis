@@ -20,7 +20,7 @@
 // }
 
 
-export function performCalculation(rowValueState, setRowValueState, visualState, setVisualState) {
+export async function performCalculation(rowValueState, setRowValueState, visualState, setVisualState, setTimeState) {
     let valuesRows = [...rowValueState.value];
 
     let lastIndx = valuesRows.pop();
@@ -509,6 +509,17 @@ export function performCalculation(rowValueState, setRowValueState, visualState,
         console.log(throughput);
 
 
+        console.log('Curr time: ', curr_time);
+
+        const timeout1 = (i) => {
+            setTimeout(() => {
+                setTimeState(i);
+            }, i * 3000);
+        }
+
+        for (let i = 0; i < curr_time; i++) {
+            await timeout1(i);
+        }
 
 
 
