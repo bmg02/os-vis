@@ -39,6 +39,10 @@ function VisualTable(props) {
     
     const classes = useStyle();
 
+    React.useEffect(() => {
+        console.log(props.rows);
+    }, [props.rows]);
+
     return (
         <TableContainer component={ Paper } classes={{ root: classes.tablePaperRoot }}>
             <div className={ classes.tableHeading }>{props.name}</div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MenuItem, Popover, makeStyles } from '@material-ui/core';
+import { MenuItem, Popover, makeStyles, Snackbar } from '@material-ui/core';
 import { Drawer, Switch, Button, TableLayout, VisualTable } from '../components';
-import { History, PlayArrow } from '@material-ui/icons';
+import { History, PlayArrow, SettingsSharp } from '@material-ui/icons';
 import './Algo.scss';
+import '../layouts/wow.css';
 import { capitalizeEachWord } from '../util/general';
 import { performCalculation } from '../util/algorithms';
+import { DialogBox, Dropdown, DropdownMenu } from '../components';
 
 const useStyle = makeStyles(theme => ({
     menuItemRoot: {
@@ -18,20 +20,21 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
+const cols = ["AT (in Ready State)", "Total CPU BT Left", "Total CPU BT", "Next CPU BT", "Total IOBT", "Next Left CPU BT", "P. No.", "AT (First AT)", "Total (CPU+IO) BT Left", "Priority"];
+
 function Algo(props) {
 
     const classes = useStyle();
 
     const [ ioBoundState, setIoBoundState ] = React.useState(false);
 
-    const [ anchorEl, setAnchorEl ] = React.useState(null);
 
     const [ tableAnimeValueState, setTableAnimeValueState ] = React.useState({
-        notArrived: [],
-        ready: [],
-        running: [],
-        waiting: [],
-        ioProcess: [],
+        notArrived: [[]],
+        ready: [[]],
+        running: [[]],
+        waiting: [[]],
+        ioProcess: [[]],
         avgTat: '',
         avgWt: '',
         avgRt: '',
@@ -39,20 +42,58 @@ function Algo(props) {
         throughput: ''
     });
 
+    const priorityList = React.useRef({});
+
     const [ timeState, setTimeState ] = React.useState('');
 
-    const handleChangeAlgoOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+    const [ dialogState, setDialogState ] = React.useState(false);
 
-    const handleChangeAlgoClose = (event) => {
-        setAnchorEl(null);
-    };
+    const handleDialogOpen = () => setDialogState(true);
+    const handleDialogClose = () => setDialogState(false);
 
     const [ tableValueState, setTableValueState ] = React.useState({ value: [] });
 
     const handleSwitchChange = (e) => {
         setIoBoundState(e.target.checked);
+    }
+
+    const [ changeAlgoState, setChangeAlgoState ] = React.useState(null);
+    const handleAlgoOpen = (e) => {
+        setChangeAlgoState(e.currentTarget);
+    }
+
+    const [ priorityState, setPriorityState ] = React.useState({
+        dropdown0: 0,
+        dropdown1: 0,
+        dropdown2: 0
+    });
+
+    const [ priorityErrState, setPriorityErrState ] = React.useState(false);
+    const handlePriorityErrChange = () => {
+        setPriorityErrState(!priorityErrState);
+    }
+
+    const [ showDropDown2State, setShowDropDown2State ] = React.useState('none');
+
+    const handlePriorityChange = (id, index) => {
+        
+        if (id === 'dropdown1' && index === 0) setShowDropDown2State('none');
+        
+        for (let i = 0; i < 3; i++) {
+            if (id.indexOf(i) === -1) {
+                if ((id === 'dropdown1' && index !== 0) || id !== 'dropdown1') {
+                    if (priorityList.current[id][index] === priorityList.current['dropdown' + i][priorityState['dropdown' + i]]) {
+                        handlePriorityErrChange();
+                        return;
+                    }
+                }
+            }
+        }
+        if (id === 'dropdown1' && index !== 0) setShowDropDown2State('block');
+
+        else if (id !== 'dropdown2') setShowDropDown2State('none');
+
+        setPriorityState({ ...priorityState, [id]: index });
     }
 
     const getVisualAnimation = () => {
@@ -62,38 +103,59 @@ function Algo(props) {
 
     React.useEffect(() => {
         document.title = capitalizeEachWord(props.match.params.algo.replace(/-/g, ' ')) + ' at OS-VIS';
+
+        if (props.match.params.algo === 'first-come-first-serve') {
+            priorityList.current = {
+                dropdown0: [ cols[0], cols[7] ],
+                dropdown1: [ cols[6], cols[0], cols[7] ],
+                dropdown2: [ cols[6] ],
+            };
+        }
+        else if (props.match.params.algo === 'shortest-job-first' || props.match.params.algo === 'shortest-remaining-time-first') {
+            priorityList.current = {
+                dropdown0: [ cols[1], cols[3], cols[8] ],
+                dropdown1: [ cols[6], cols[0], cols[7] ],
+                dropdown2: [ cols[6], cols[0], cols[7] ],
+                dropdown3: [ cols[6] ],
+            };
+        }
+        else if (props.match.params.algo === 'longest-job-first' || props.match.params.algo === 'longest-remaining-time-first') {
+            priorityList.current = {
+                dropdown0: [ cols[1], cols[3], cols[8] ],
+                dropdown1: [ cols[6], cols[0], cols[7] ],
+                dropdown2: [ cols[6], cols[0], cols[7] ],
+                dropdown3: [ cols[6] ],
+            };
+        }
+        else if (props.match.params.algo === 'priority-scheduling') {
+            priorityList.current = {
+                dropdown0: [ cols[9] ],
+                dropdown1: [ cols[6], cols[0], cols[7] ],
+                dropdown2: [ cols[6], cols[0], cols[7] ],
+                dropdown3: [ cols[6] ],
+            };
+        }
     }, []);
 
 
     return (
         <div style={{ display: 'flex' }}>
+            <Snackbar open={ priorityErrState } onClose={ handlePriorityErrChange } message='Priority must not be same.' />
             <Drawer anchor='left' content={
                 <div>
                     <div className='section-heading extra-large margin-20'>{ props.match.params.algo.replace(/-/g, ' ') }</div>
-                    <div className='extra-small margin-20' style={{ alignSelf: 'baseline' }}><Link onClick={ handleChangeAlgoOpen }>Change Algorithm</Link></div>
-                    <Popover
-                        id="change-algo-menu"
-                        anchorEl={ anchorEl }
-                        keepMounted
-                        open={ Boolean(anchorEl) }
-                        onClose={ handleChangeAlgoClose }
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                    >
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/first-come-first-serve'>First Come First Serve</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/priority-scheduling'>Priority Scheduling</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/longest-job-first'>Longest Job First</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/longest-remaining-time-first'>Longest Remaining Time First</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/round-robin'>Round Robin</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/shortest-job-first'>Shortest Job First</Link></MenuItem>
-                        <MenuItem classes={{ root: classes.menuItemRoot }}><Link to='/scheduling/shortest-remaining-time-first'>Shortest Remaining Time First</Link></MenuItem>
-                    </Popover>
+                    <div className='extra-small margin-20' style={{ alignSelf: 'baseline' }}><Link onClick={ handleAlgoOpen }>Change Algorithm</Link></div>
+
+                    <Dropdown open={ changeAlgoState } links={ true } menuList={[
+                        { name: 'First Come First Serve', link: 'first-come-first-serve' },
+                        { name: 'Priority Scheduling', link: 'priority-scheduling' },
+                        { name: 'Longest Job First', link: 'longest-job-first' },
+                        { name: 'Longest Remaining Time First', link: 'longest-remaining-time-first' },
+                        { name: 'Round Robin', link: 'round-robin' },
+                        { name: 'Shortest Job First', link: 'shortest-job-first' },
+                        { name: 'Shortest Remaining Time First', link: 'shortest-remaining-time-first' },
+                    ]} />
+                    
                     <br/><br/>
                     <div><Switch checked={ ioBoundState } onChange={ handleSwitchChange } label='I/O Bound' /></div>
                     <br/>
@@ -120,6 +182,11 @@ function Algo(props) {
                             <div>View Time Log</div> &nbsp;&nbsp;&nbsp;<History fontSize='small' />
                         </Button>
                     </div>
+                    <div className='margin-10'>
+                        <Button size='small' style={{ float: 'none' }} onClick={ handleDialogOpen }>
+                            <div>Priority Settings</div> &nbsp;&nbsp;&nbsp;<SettingsSharp fontSize='small' />
+                        </Button>
+                    </div>
                 </div>
             } />
             <div style={{ width: '100%' }}>
@@ -130,7 +197,7 @@ function Algo(props) {
                         <TableLayout ioBound={ ioBoundState } rowValueState={ tableValueState } setRowValueState={ setTableValueState }  />
                         <br/>
                         <br/><br/>
-                        <Button classnames='float-right' onClick={ getVisualAnimation }><div>PLAY&nbsp;&nbsp;</div><PlayArrow style={{ color: '#333' }} /></Button>
+                        <Button classnames='float-right' onClick={ getVisualAnimation }>PLAY&nbsp;&nbsp;<PlayArrow style={{ color: '#333' }} /></Button>
                         <div style={{ clear: 'both' }}></div>
                         <br/><br/>
                         <div style={{ display: tableAnimeValueState.avgTat !== '' ? 'block' : 'none' }}>
@@ -155,16 +222,69 @@ function Algo(props) {
                         <br/><br/>
                         
                         <div id='visualAnimeDiv'>
-                            <VisualTable name='Not arrived' columns={['P. No.', 'AT']} rows={ tableAnimeValueState.notArrived } />
+                            <table id="not-arrived" class="content-table">
+                                <caption> Not Arrived </caption>
+                                <tr>
+                                    <th>P. No.</th>
+                                    <th>AT</th>
+                                </tr>
+                            </table>
+
+
+                            <table id="ready" class="content-table">
+                                <caption> Ready </caption>
+                            </table>
+
+                            <table id="running" class="content-table">
+                                <caption> Running </caption>
+                                <tr>
+                                    <th>P. No.</th>
+                                    <th>Entered At</th>
+                                    <th>Will Leave At</th>
+                                </tr>
+                            </table>
+
+
+                            <table id="terminated" class="content-table">
+                                <caption> Terminated </caption>
+                                <tr>
+                                    <th>P. No.</th>
+                                    <th>Terminated At</th>
+                                </tr>
+                            </table>
+
+
+                            <table id="io" class="content-table">
+                                <caption> IO/Blocked </caption>
+                                <tr>
+                                    <th>P. No.</th>
+                                    <th>Entered At</th>
+                                    <th>Will Leave At</th>
+                                </tr>
+                            </table>
+                            {/* <VisualTable name='Not arrived' columns={['P. No.', 'AT']} rows={ tableAnimeValueState.notArrived } />
                             <VisualTable name='Ready' columns={[ 'P. No.', 'AT' ]} rows={ tableAnimeValueState.ready } />
                             <VisualTable name='Running' columns={[ 'P. No.', 'Entered at', 'Leave at' ]} rows={ tableAnimeValueState.running } />
                             <VisualTable name='Terminated' columns={[ 'P. No.', 'Terminated at' ]} rows={ tableAnimeValueState.terminated } />
-                            <VisualTable name='I/O Process' columns={[ 'P. No.', 'Entered at', 'Leave at' ]} rows={ tableAnimeValueState.ioProcess } />
+                            <VisualTable name='I/O Process' columns={[ 'P. No.', 'Entered at', 'Leave at' ]} rows={ tableAnimeValueState.ioProcess } /> */}
+                        </div>
+                        <h3 id="time" style={{ 'margin-top': '15px' }}> t = -1</h3>
+                        <div style={{ 'margin-top': '60px' }}>
+                            <div> Time Log: </div>
+                            <br/>
+                            <div id="txt"> </div>
                         </div>
                     </div>
                     </center>
                 </div>
             </div>
+            <DialogBox open={ dialogState } onClose={ handleDialogClose } title='Priority Settings' content={
+                <div>
+                    <DropdownMenu open={ priorityState } selectedItem={ priorityState } changeItem={ handlePriorityChange } id='dropdown0' label='Priority 1' menuList={ priorityList.current['dropdown0'] } />
+                    <DropdownMenu open={ priorityState } selectedItem={ priorityState } changeItem={ handlePriorityChange } id='dropdown1' label='Priority 2' menuList={ priorityList.current['dropdown1'] } />
+                    <DropdownMenu display={ showDropDown2State } open={ priorityState } selectedItem={ priorityState } changeItem={ handlePriorityChange } id='dropdown2' label='Priority 3' menuList={ priorityList.current['dropdown2'] } />
+                </div>
+            } />
         </div>
     );
 }
