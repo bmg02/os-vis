@@ -15,6 +15,8 @@ const useStyle = makeStyles(theme => ({
         fontSize: '14px'
     },
     avgsDiv: {
+        padding: '6px 12px',
+        background: '#DCDCDC',
         display: 'inline-block',
         margin: '12px 40px',
     }
@@ -159,11 +161,6 @@ function Algo(props) {
     //     dropdown2: 0
     // });
 
-    const [ priorityErrState, setPriorityErrState ] = React.useState(false);
-    const handlePriorityErrChange = () => {
-        setPriorityErrState(!priorityErrState);
-    }
-
     // const [ showDropDown2State, setShowDropDown2State ] = React.useState('none');
 
     // const handlePriorityChange = (id, index) => {
@@ -190,6 +187,12 @@ function Algo(props) {
     const getVisualAnimation = () => {
         // document.getElementById('visualAnimeDiv').remove();
         // console.log('151');
+        setTimeState('');
+        setGanttChartState(initChart(4));
+        setTimelineChartState(initChart(3));
+        setTimeLogState({ list: [] });
+        setFinalGanttChartState(initChart(4));
+        setFinalTimelineChartState(initChart(3));
         document.getElementById('visualAnimeDiv').style.display = 'inline-block';
         performCalculation(props.match.params.algo, tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState, setTimeState, timeQuantumState, setFinalGanttChartState, setFinalTimelineChartState);
         // setTimeout(() => {

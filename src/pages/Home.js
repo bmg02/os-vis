@@ -50,10 +50,10 @@ function Home() {
                     <div className='small-section-content flex-auto'>
                         <div className='section-heading text-left extra-large'>Developers</div>
                         <ul>
-                            <Link to='/devs/bhuvan-gandhi'><li>Bhuvan Gandhi</li></Link>
-                            <Link to='/devs/parn-desai'><li>Parn Desai</li></Link>
-                            <Link to='/devs/shreedhar-bhatt'><li>Shreedhar Bhatt</li></Link>
-                            <Link to='/devs/vinay-khilwani'><li>Vinay Khilwani</li></Link>
+                            <a href='https://github.com/bmg02' target='_blank' rel='noopener noreferrer'><li>Bhuvan Gandhi</li></a>
+                            <a href='https://github.com/parn-desai' target='_blank' rel='noopener noreferrer'><li>Parn Desai</li></a>
+                            <a href='https://github.com/ShreedharBhatt22' target='_blank' rel='noopener noreferrer'><li>Shreedhar Bhatt</li></a>
+                            <a href='https://github.com/vok_8' target='_blank' rel='noopener noreferrer'><li>Vinay Khilwani</li></a>
                         </ul>
                     </div>
                 </div>
