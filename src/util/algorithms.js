@@ -1,10 +1,10 @@
-export async function performCalculation(rowValueState, setRowValueState, visualState, setVisualState, setTimeState) {
+export function performCalculation(algoName, rowValueState, setRowValueState, visualState, setVisualState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState) {
     let valuesRows = [...rowValueState.value];
 
     let lastIndx = valuesRows.pop();
 
     let n = valuesRows.length;
-    console.log(n);
+    // console.log(n);
 
     let at = [];
     let total_cpu_burst = [];
@@ -15,8 +15,10 @@ export async function performCalculation(rowValueState, setRowValueState, visual
 
     let all_bts = [];
 
+    // google.charts.load('current', {'packages':['timeline']});
+
     for (let i in valuesRows) {
-        console.log(i);
+        // console.log(i);
         total_cpu_burst.push(0);
         total_left_cpu_burst.push(0);
         total_io_burst.push(0);
@@ -51,9 +53,9 @@ export async function performCalculation(rowValueState, setRowValueState, visual
         all_bts.push(bts);
     }
 
-    console.log(valuesRows);
-    console.log(at);
-    console.log(all_bts);
+    // console.log(valuesRows);
+    // console.log(at);
+    // console.log(all_bts);
 
     let terminated_at_every_time = [[]];
     let running_at_every_time = [[]];
@@ -87,7 +89,7 @@ export async function performCalculation(rowValueState, setRowValueState, visual
         ct.push(0);
     }
 
-    console.log(curr_not_arrived);
+    // console.log(curr_not_arrived);
 
     let next_rem_cpu_burst=next_cpu_burst;
 
@@ -96,12 +98,18 @@ export async function performCalculation(rowValueState, setRowValueState, visual
             return a[0] - b[0];
         });
 
-        let tq = 2; //(get_tq); //for RR
+        let tq = 2;
+
+        if (algoName === 'round-robin') {
+            tq = 2; // GET TimeQuantum FROM USER INPUT //(get_tq); //for RR
+        }
         let pr = []; //Priority
 
         for (let i = 0; i < n; i++) {
-            pr.push(1);
-            // pr.push(pr[i]); //for Priority Scheduling
+            // pr.push(1);
+            if (algoName === 'priority-scheduling-np' || algoName === 'priority-scheduling-p') pr.push(pr[i]); //for Priority Scheduling
+
+            // PUT PRIORITY COLUMN INPUT IN ABOVE ARRAY
         }
 
         // pr=[1,2,3,4];
@@ -121,8 +129,15 @@ export async function performCalculation(rowValueState, setRowValueState, visual
 
         let sort_prior = [];
 
+        if (algoName === 'first-come-first-serve') sort_prior = [0, 6];
+        else if (algoName === 'shortest-job-first' || algoName === 'shortest-remaining-time-first') sort_prior = [1, 6];
+        else if (algoName === 'longest-job-first' || algoName === 'longest-remaining-time-first') sort_prior = [-1, 6];
+        else if (algoName === 'priority-scheduling-np' || algoName === 'priority-scheduling-p') {
+            sort_prior = [9, 6];
+        }
+
         // Preemtive + Non-Preemptive
-        sort_prior=[0,6]; //FCFS (Pr1:AT(In Ready State), Pr2:P.No.)
+        // sort_prior=[0,6]; //FCFS (Pr1:AT(In Ready State), Pr2:P.No.)
         // sort_prior=[7,6]; //FCFS (Pr1:AT(First AT), Pr2:P.No.)
         // sort_prior=[0,7,6]; //FCFS (Pr1:AT(In Ready State), Pr2:AT(First AT), Pr3:P.No.)
         // sort_prior=[7,0,6]; //FCFS (Pr1:AT(First AT), Pr2:AT(In Ready State), Pr3:P.No.)
@@ -261,7 +276,11 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                         ready_to_running_count_at_every_time[curr_time + 1]++;
                         let index = curr_ready[0][6];
                         if(total_cpu_burst[index] === total_left_cpu_burst[index]) rt[index]=curr_time-at[index];
-                        let add = next_cpu_burst[index]; //for FCFS(Non-Preemptive), SJF, LJF, Priority(Non-Preemptive), HRRN(Non-Preemptive)
+                        let add = 1; //next_cpu_burst[index]; //for FCFS(Non-Preemptive), SJF, LJF, Priority(Non-Preemptive), HRRN(Non-Preemptive)
+                        if (algoName === 'first-come-first-serve' || algoName === 'shortest-job-first' || algoName === 'longest-job-first' || algoName === 'priority-scheduling-np') add = next_cpu_burst[index];
+                        else if (algoName === 'round-robin') {
+                            add = Math.min(tq,next_rem_cpu_burst[index]);
+                        }
                         // let add=1; //for SRTF, LRTF, Priority(Preemptive), HRRN(Preemptive), FCFS(Preemptive)
                         // let add=Math.min(tq,next_rem_cpu_burst[index]); //for RR
                         cpu_util++;
@@ -346,7 +365,12 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                             
                             if(total_cpu_burst[index] === total_left_cpu_burst[index]) rt[index]=curr_time-at[index];
                             
-                            let add=next_cpu_burst[index]; //for FCFS(Non-Preemptive), SJF, LJF, Priority(Non-Preemptive), HRRN(Non-Preemptive)
+                            // let add=next_cpu_burst[index]; //for FCFS(Non-Preemptive), SJF, LJF, Priority(Non-Preemptive), HRRN(Non-Preemptive)
+                            let add = 1; //next_cpu_burst[index]; //for FCFS(Non-Preemptive), SJF, LJF, Priority(Non-Preemptive), HRRN(Non-Preemptive)
+                            if (algoName === 'first-come-first-serve' || algoName === 'shortest-job-first' || algoName === 'longest-job-first' || algoName === 'priority-scheduling-np') add = next_cpu_burst[index];
+                            else if (algoName === 'round-robin') {
+                                add = Math.min(tq,next_rem_cpu_burst[index]);
+                            }
                             // let add=1; //for SRTF, LRTF, Priority(Preemptive), HRRN(Preemptive), FCFS(Preemptive)
                             // let add=Math.min(tq,next_rem_cpu_burst[index]); //for RR
                             cpu_util++;
@@ -426,12 +450,6 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                 }
             });
 
-            if(curr_time === 1)
-            {
-                console.log(curr_ready);
-                console.log(curr_ready2);
-            }
-
             terminated_at_every_time.push(curr_terminated);
             running_at_every_time.push(curr_running);
             io_at_every_time.push(curr_io);
@@ -441,6 +459,14 @@ export async function performCalculation(rowValueState, setRowValueState, visual
 
             curr_time++;
         }
+
+        while (running_at_every_time.length < curr_time) {
+            running_at_every_time.push([]);
+        }
+
+        console.log(running_at_every_time);
+
+
         let avg_tat = 0;
         let avg_wt = 0;
         let avg_rt = 0;
@@ -487,15 +513,15 @@ export async function performCalculation(rowValueState, setRowValueState, visual
         // let throughput = n / (curr_time - 1);
         // console.log(throughput);
 
-        console.log('terminated_at_every_time', terminated_at_every_time);
-        console.log('running_at_every_time', running_at_every_time);
-        console.log('io_at_every_time', io_at_every_time);
-        console.log('ready_at_every_time', ready_at_every_time);
-        console.log('not_arrived_at_every_time', not_arrived_at_every_time);
-        console.log('blah', blah);
-        console.log('Curr time: ', curr_time);
+        // console.log('terminated_at_every_time', terminated_at_every_time);
+        // console.log('running_at_every_time', running_at_every_time);
+        // console.log('io_at_every_time', io_at_every_time);
+        // console.log('ready_at_every_time', ready_at_every_time);
+        // console.log('not_arrived_at_every_time', not_arrived_at_every_time);
+        // console.log('blah', blah);
+        // console.log('Curr time: ', curr_time);
 
-        console.log(visualState);
+        // console.log(visualState);
 
         var table_not_arrived=document.getElementById("not-arrived");
         var table_ready=document.getElementById("ready");
@@ -503,7 +529,33 @@ export async function performCalculation(rowValueState, setRowValueState, visual
         var table_io=document.getElementById("io");
         var table_terminated=document.getElementById("terminated");
 
-        var time=document.getElementById("time");
+        // var time=document.getElementById("time");
+
+        let curr_len=table_not_arrived.rows.length;
+        for(let i=1; i<curr_len; i++)
+        {
+            table_not_arrived.deleteRow(1);
+        }
+        curr_len=table_ready.rows.length;
+        for(let i=0; i<curr_len; i++)
+        {
+            table_ready.deleteRow(1);
+        }
+        curr_len=table_running.rows.length;
+        for(let i=1; i<curr_len; i++)
+        {
+            table_running.deleteRow(1);
+        }
+        curr_len=table_io.rows.length;
+        for(let i=1; i<curr_len; i++)
+        {
+            table_io.deleteRow(1);
+        }
+        curr_len=table_terminated.rows.length;
+        for(let i=1; i<curr_len; i++)
+        {
+            table_terminated.deleteRow(1);
+        }
 
         for(var i=0; i<not_arrived_at_every_time[0].length; i++)
         {
@@ -625,6 +677,191 @@ export async function performCalculation(rowValueState, setRowValueState, visual
             }
         }
 
+        var colorss=[];
+        var first=[];
+        for(var i=0; i<n; i++)
+        {
+            first.push(false);
+        }
+
+        async function dc1(i)
+        {
+            // google.charts.load('current', {'packages':['timeline']});
+            // google.charts.setOnLoadCallback(async function => {
+                // var chart = new google.visualization.Timeline(container);
+                // var dataTable = new google.visualization.DataTable();
+                // dataTable.addColumn({ type: 'string', id: 'Process' });
+                // dataTable.addColumn({ type: 'number', id: 'Start' });
+                // dataTable.addColumn({ type: 'number', id: 'End' });
+                let dataTable = [];
+                let dataColumn = timelineChartState.dataTable[0];
+                dataTable.push(dataColumn);
+                i = parseInt(i);
+                for(var ii=0; ii <= i; ii++)
+                {
+                    console.log(ii, running_at_every_time[ii]);
+                    for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                    {
+                        // if (ii != running_at_every_time[ii][jj][1]) continue;
+                        if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
+                            console.log('707');
+                            dataTable.push([
+                                'P'+running_at_every_time[ii][jj][0],
+                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                (parseInt(i) + 1) * 1000
+                            ]);
+                            ii = i + 1;
+                            // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                            // ii--;
+                        }
+                        else {
+                            dataTable.push([
+                                'P'+running_at_every_time[ii][jj][0],
+                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                parseInt(running_at_every_time[ii][jj][2]) * 1000
+                            ]);
+                            ii += parseInt(running_at_every_time[ii][jj][2]);
+                            ii--;
+                        }
+                    }
+                }
+                var options = {
+                  colors: colorss
+                };
+                setTimelineChartState({ dataTable, options });
+                // chart.draw(dataTable,options);
+            // };
+        }
+
+        var colors= ["#5e97f6", "#db4437", "#f2a600", "#0f9d58", "#ab47bc", "#00acc1", "#ff7043", "#9e9d24", "#5c6bc0", "#f06292", "#00796b","#c2185b", "#2a56c6", "#a52714", "#ee8100", "#0b8043", "#6a1b9a", "#00838f", "#e64a19", "#827717", "#3949ab", "#e91e63", "#004d40", "#880e4f", "#c6dafc", "#f4c7c3", "#fce8b2", "#b7e1cd", "#e1bee7", "#b2ebf2", "#ffccbc", "#f0f4c3", "#c5cae9", "#f8bbd0", "#b2dfdb", "#f48fb1"];
+
+        let c_running = -1;
+        async function dc2(i)
+        {
+            console.log("i + 1: ", i+1);
+            // google.charts.load('current', {'packages':['timeline']});
+            // google.charts.setOnLoadCallback(drawChart);
+            // function drawChart() 
+            // {
+                // var container = document.getElementById('gantt');
+                // var chart = new google.visualization.Timeline(container);
+                // var dataTable = new google.visualization.DataTable();
+                // let dataTab = document.getElementById('ganttChart').data;
+                // dataTable.addColumn({ type: 'string', id: 'Position' });
+                // dataTable.addColumn({ type: 'string', id: 'Process' });
+                // dataTable.addColumn({ type: 'number', id: 'Start' });
+                // dataTable.addColumn({ type: 'number', id: 'End' });
+                let dataTable = [];
+                let dataColumn = ganttChartState.dataTable[0];
+                dataTable.push(dataColumn);
+                i = parseInt(i);
+                for(var ii=0; ii <= i; ii++)
+                {
+                    console.log(ii, running_at_every_time[ii]);
+                    for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                    {
+                        // if (ii != running_at_every_time[ii][jj][1]) continue;
+                        if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
+                            console.log('743');
+                            dataTable.push([
+                                'Process',
+                                'P'+running_at_every_time[ii][jj][0],
+                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                (parseInt(i) + 1) * 1000
+                            ]);
+                            ii = i + 1;
+                            // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                            // ii--;
+                        }
+                        else {
+                            dataTable.push([
+                                'Process',
+                                'P'+running_at_every_time[ii][jj][0],
+                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                parseInt(running_at_every_time[ii][jj][2]) * 1000
+                            ]);
+                            ii += parseInt(running_at_every_time[ii][jj][2]);
+                            ii--;
+                        }
+                    }
+                }
+                var options = {
+                  timeline: { showRowLabels: false },
+                  colors: colorss
+                };
+                console.log(dataTable);
+                setGanttChartState({ dataTable, options });
+                // chart.draw(dataTable,options);
+            // }
+        }
+        // async function dc2(i)
+        // {
+        //     console.log("i + 1: ", i+1);
+        //     // google.charts.load('current', {'packages':['timeline']});
+        //     // google.charts.setOnLoadCallback(drawChart);
+        //     // function drawChart() 
+        //     // {
+        //         // var container = document.getElementById('gantt');
+        //         // var chart = new google.visualization.Timeline(container);
+        //         // var dataTable = new google.visualization.DataTable();
+        //         // let dataTab = document.getElementById('ganttChart').data;
+        //         // dataTable.addColumn({ type: 'string', id: 'Position' });
+        //         // dataTable.addColumn({ type: 'string', id: 'Process' });
+        //         // dataTable.addColumn({ type: 'number', id: 'Start' });
+        //         // dataTable.addColumn({ type: 'number', id: 'End' });
+        //         let dataTable = [];
+        //         let dataColumn = ganttChartState.dataTable[0];
+        //         dataTable.push(dataColumn);
+
+        //         for(var ii=0; ii <= i; ii++)
+        //         {
+        //             i = parseInt(i);
+        //             console.log(ii, running_at_every_time[ii]);
+        //             if (typeof(running_at_every_time[ii]) === 'object') {
+        //                 console.log('742');
+        //             }
+        //             else break;
+        //             for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+        //             {
+        //                 // if (ii != running_at_every_time[ii][jj][1]) continue;
+        //                 if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
+        //                     console.log('743');
+        //                     dataTable.push([
+        //                         'Process',
+        //                         'P'+running_at_every_time[ii][jj][0],
+        //                         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+        //                         (parseInt(i) + 1) * 1000
+        //                     ]);
+        //                     ii = i + 1;
+        //                     // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+        //                     // ii--;
+        //                 }
+        //                 else {
+        //                     dataTable.push([
+        //                         'Process',
+        //                         'P'+running_at_every_time[ii][jj][0],
+        //                         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+        //                         parseInt(running_at_every_time[ii][jj][2]) * 1000
+        //                     ]);
+        //                     ii += parseInt(running_at_every_time[ii][jj][2]);
+        //                     ii--;
+        //                 }
+                        
+
+        //                 // ii += Math.max(ii+2,running_at_every_time[ii][jj][2] + 1);
+        //                 // ii--;
+        //             }
+        //         }
+        //         var options = {
+        //           timeline: { showRowLabels: false },
+        //           colors: colorss
+        //         };
+        //         console.log(dataTable);
+        //         setGanttChartState({ dataTable, options });
+        //         // chart.draw(dataTable,options);
+        //     // }
+        // }
+
         async function timeout8(i)
         {
             // Inserting in running table
@@ -638,6 +875,10 @@ export async function performCalculation(rowValueState, setRowValueState, visual
             cell2.innerHTML=col2;
             var cell3=new_row.insertCell(2);
             cell3.innerHTML=col3;
+
+            // await dc2(i);
+            // google.charts.setOnLoadCallback(await dc1(i));
+            // google.charts.setOnLoadCallback(await dc2(i));
         }
 
         async function timeout6(i)
@@ -671,7 +912,7 @@ export async function performCalculation(rowValueState, setRowValueState, visual
             }
         }
 
-        var txt=document.getElementById('txt');
+        // var txt=document.getElementById('txt');
 
         async function timeout1(i)
         {
@@ -681,8 +922,8 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     await sleep(500);
                 }
                 await sleep(100);
-                txt.innerHTML="";
-                time.innerHTML=("t = " + i);
+                // txt.innerHTML="";
+                // time.innerHTML=("t = " + i);
 
                 // Not arrived to ready table
                 for(var j=0; j<not_arrived_to_ready_count_at_every_time[i+1]; j++)
@@ -692,15 +933,20 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     {
                         if(ready_at_every_time[i+1][k][6]==pno_of_transfer)
                         {
-                            table_not_arrived.rows[1].style.backgroundColor="lightblue";
+                            table_not_arrived.rows[1].style.backgroundColor=colors[parseInt(pno_of_transfer)];
                             await sleep(300);
                             table_not_arrived.rows[1].style.backgroundColor="";
                             table_not_arrived.deleteRow(1);
                             await sleep(300);
-                            txt.innerHTML+="--> P" + pno_of_transfer + " goes from 'Not Arrived' to 'Ready'.<br/>";
+                            // txt.innerHTML += "--> P" + pno_of_transfer + " goes from 'Not Arrived' to 'Ready'.<br/>";
+                            let timeList = timeLogState.list;
+                            timeList.push({ i, txt: "P" + pno_of_transfer + " goes from 'Not Arrived' to 'Ready'." });
+                            setTimeLogState({ list: timeList });
+                            document.getElementById('a1').style.color=colors[parseInt(pno_of_transfer)];
                             await sleep(300);
                             await timeout2(i,k);
-                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor="lightblue";
+                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor=colors[parseInt(pno_of_transfer)];
+                            document.getElementById('a1').style.color='#5c5c5c';
                             await sleep(300);
                             table_ready.rows[table_ready.rows.length-1].style.backgroundColor="";
                             break;
@@ -716,16 +962,21 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     {
                         if(ready_at_every_time[i+1][k][6]==pno_of_transfer)
                         {
-                            table_io.rows[1].style.backgroundColor="lightblue";
+                            table_io.rows[1].style.backgroundColor=colors[parseInt(pno_of_transfer)];
                             await sleep(300);
                             table_io.rows[1].style.backgroundColor="";
                             table_io.deleteRow(1);
                             await sleep(300);
-                            txt.innerHTML+="--> P" + pno_of_transfer + " goes from 'IO/Blocked' to 'Ready'.<br/>";
+                            // txt.innerHTML+="--> P" + pno_of_transfer + " goes from 'IO/Blocked' to 'Ready'.<br/>";
+                            let timeList = timeLogState.list;
+                            timeList.push({ i, txt: "P" + pno_of_transfer + " goes from 'IO/Blocked' to 'Ready'." });
+                            setTimeLogState({ list: timeList });
+                            document.getElementById('a6').style.color=colors[parseInt(pno_of_transfer)];
                             await sleep(300);
                             await timeout2(i,k);
-                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor="lightblue";
+                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor=colors[parseInt(pno_of_transfer)];
                             await sleep(300);
+                            document.getElementById('a6').style.color='#5c5c5c';
                             table_ready.rows[table_ready.rows.length-1].style.backgroundColor="";
                             break;
                         }
@@ -739,15 +990,21 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     {
                         if(terminated_at_every_time[i+1][k][1]==i)
                         {
-                            table_running.rows[1].style.backgroundColor="lightblue";
+                            c_running = -1;
+                            table_running.rows[1].style.backgroundColor=colors[parseInt(terminated_at_every_time[i+1][k][0])];
                             await sleep(300);
                             table_running.rows[1].style.backgroundColor="";
                             table_running.deleteRow(1);
                             await sleep(300);
-                            txt.innerHTML+="--> P" + terminated_at_every_time[i+1][k][0] + " goes from 'Running' to 'Terminated'.<br/>";
+                            // txt.innerHTML+="--> P" + terminated_at_every_time[i+1][k][0] + " goes from 'Running' to 'Terminated'.<br/>";
+                            let timeList = timeLogState.list;
+                            timeList.push({ i, txt: "P" + terminated_at_every_time[i+1][k][0] + " goes from 'Running' to 'Terminated'." });
+                            setTimeLogState({ list: timeList });
+                            document.getElementById('a4').style.color=colors[parseInt(terminated_at_every_time[i+1][k][0])];
                             await sleep(300);
                             await timeout3(i,table_terminated.rows.length-1,k);
-                            table_terminated.rows[table_terminated.rows.length-1].style.backgroundColor="lightblue";
+                            table_terminated.rows[table_terminated.rows.length-1].style.backgroundColor=colors[parseInt(terminated_at_every_time[i+1][k][0])];
+                            document.getElementById('a4').style.color='#5c5c5c';
                             await sleep(300);
                             table_terminated.rows[table_terminated.rows.length-1].style.backgroundColor="";
                             break;
@@ -762,15 +1019,20 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     {
                         if(io_at_every_time[i+1][k][0]==running_at_every_time[i][0][0])
                         {
-                            table_running.rows[1].style.backgroundColor="lightblue";
+                            table_running.rows[1].style.backgroundColor=colors[parseInt(io_at_every_time[i+1][k][0])];
                             await sleep(300);
                             table_running.rows[1].style.backgroundColor="";
                             table_running.deleteRow(1);
                             await sleep(300);
-                            txt.innerHTML+="--> P" + io_at_every_time[i+1][k][0] + " goes from 'Running' to 'IO/Blocked'.<br/>";
+                            // txt.innerHTML+="--> P" + io_at_every_time[i+1][k][0] + " goes from 'Running' to 'IO/Blocked'.<br/>";
+                            let timeList = timeLogState.list;
+                            timeList.push({ i, txt: "P" + io_at_every_time[i+1][k][0] + " goes from 'Running' to 'IO/Blocked'." });
+                            setTimeLogState({ list: timeList });
+                            document.getElementById('a5').style.color=colors[parseInt(io_at_every_time[i+1][k][0])];
                             await sleep(300);
                             await timeout4(i,k);
-                            table_io.rows[table_io.rows.length-1].style.backgroundColor="lightblue";
+                            table_io.rows[table_io.rows.length-1].style.backgroundColor=colors[parseInt(io_at_every_time[i+1][k][0])];
+                            document.getElementById('a5').style.color='#5c5c5c';
                             await sleep(300);
                             table_io.rows[table_io.rows.length-1].style.backgroundColor="";
                             break;
@@ -785,15 +1047,21 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                     {
                         if(ready_at_every_time[i+1][k][6]==running_at_every_time[i][0][0])
                         {
-                            table_running.rows[1].style.backgroundColor="lightblue";
+                            c_running = -1;
+                            table_running.rows[1].style.backgroundColor=colors[parseInt(running_at_every_time[i][0][0])];
                             await sleep(300);
                             table_running.rows[1].style.backgroundColor="";
                             table_running.deleteRow(1);
                             await sleep(300);
-                            txt.innerHTML+="--> P" + running_at_every_time[i][0][0] + " goes from 'Running' to 'Ready'.<br/>";
+                            // txt.innerHTML+="--> P" + running_at_every_time[i][0][0] + " goes from 'Running' to 'Ready'.<br/>";
+                            let timeList = timeLogState.list;
+                            timeList.push({ i, txt: "P" + running_at_every_time[i][0][0] + " goes from 'Running' to 'Ready'." });
+                            setTimeLogState({ list: timeList });
+                            document.getElementById('a3').style.color=colors[parseInt(running_at_every_time[i][0][0])];
                             await sleep(300);
                             await timeout5(i,k);
-                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor="lightblue";
+                            table_ready.rows[table_ready.rows.length-1].style.backgroundColor=colors[parseInt(running_at_every_time[i][0][0])];
+                            document.getElementById('a3').style.color='#5c5c5c';
                             await sleep(300);
                             table_ready.rows[table_ready.rows.length-1].style.backgroundColor="";
                             break;
@@ -813,19 +1081,36 @@ export async function performCalculation(rowValueState, setRowValueState, visual
                 //ready to running
                 for(var j=0; j<ready_to_running_count_at_every_time[i+1]; j++)
                 {
-                    table_ready.rows[1].style.backgroundColor="lightblue";
+                    c_running = parseInt(running_at_every_time[i+1][0][1]);
+
+                    if(first[parseInt(running_at_every_time[i+1][0][0])]==false)
+                    {
+                        first[parseInt(running_at_every_time[i+1][0][0])]=true;
+                        colorss.push(colors[parseInt(running_at_every_time[i+1][0][0])]);
+                    }
+
+
+                    table_ready.rows[1].style.backgroundColor=colors[parseInt(running_at_every_time[i+1][0][0])];
                     await sleep(300);
                     table_ready.rows[1].style.backgroundColor="";
                     table_ready.deleteRow(1);
                     await sleep(300);
-                    txt.innerHTML+="--> P" + running_at_every_time[i+1][0][0] + " goes from 'Ready' to 'Running'.<br/>";
+                    // txt.innerHTML+="--> P" + running_at_every_time[i+1][0][0] + " goes from 'Ready' to 'Running'.<br/>";
+                    let timeList = timeLogState.list;
+                    timeList.push({ i, txt: "P" + running_at_every_time[i+1][0][0] + " goes from 'Ready' to 'Running'." });
+                    setTimeLogState({ list: timeList });
+                    document.getElementById('a2').style.color=colors[parseInt(running_at_every_time[i+1][0][0])];
                     await sleep(300);
                     await timeout8(i);
-                    table_running.rows[table_running.rows.length-1].style.backgroundColor="lightblue";
+                    table_running.rows[table_running.rows.length-1].style.backgroundColor=colors[parseInt(running_at_every_time[i+1][0][0])];
+                    document.getElementById('a2').style.color='#5c5c5c';
                     await sleep(300);
                     table_running.rows[table_running.rows.length-1].style.backgroundColor="";
                 }
-
+                if (running_at_every_time[i].length == 1) {
+                    await dc1(i);
+                    await dc2(i);
+                }
             },6000*i);
         }
         for(var i=0; i<curr_time; i++)

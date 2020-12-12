@@ -38,7 +38,7 @@ $success: #379c37;
 body {
 	margin: 0;
 	padding: 0;
-	font-family: Montserrat, Verdana, Geneva, Tahoma, sans-serif;
+	font-family: Montserrat, Verdana, Geneva, Tahoma, sans-serif !important;
 }
 
 .flex-layout {
@@ -94,6 +94,14 @@ a {
 
 .extra-large {
     font-size: 26px;
+}
+
+.title {
+    font-size: 16px;
+}
+
+.bold-text {
+    font-family: Montserrat-Bold, Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .full-height {

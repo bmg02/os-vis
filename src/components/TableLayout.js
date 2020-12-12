@@ -32,9 +32,9 @@ const useStyle = makeStyles(theme => ({
         padding: '5px',
         position: 'sticky',
         top: '0',
-        left: '0',
+        left: '-5px',
         transform: 'translate(-2px, 0px)',
-        zIndex: '11100',
+        // zIndex: '11100',
         background: '#FFF',
         border: '1px solid #FFF'
     },
@@ -43,7 +43,7 @@ const useStyle = makeStyles(theme => ({
         top: '0',
         left: '0',
         transform: 'translate(-2px, 0px)',
-        zIndex: '11100',
+        // zIndex: '11100',
         background: '#FFF',
         border: '1px solid #FFF'
     }
@@ -67,7 +67,7 @@ function TableLayout(props) {
         let obj = {};
         let columnArr = Object.keys(columnState.current);
         for (let col in columnArr) {
-            if (columnArr[col] === 'ioTimes') continue;
+            if (columnArr[col] === 'ioTimes' || columnArr[col] === 'priority') continue;
             else {
                 // if (columnArr[col] === 'btime') obj[columnArr[col]] = '1';
                 // else obj[columnArr[col]] = '';
@@ -75,6 +75,7 @@ function TableLayout(props) {
             }
         }
         obj['ioTimes'] = '0';
+        obj['priority'] = '1';
         return obj;
     }
 
@@ -96,7 +97,7 @@ function TableLayout(props) {
         let rowArr = Object.keys(rowValueState.value[lastRowIndex]);
         console.log(rowArr);
         for (let r in rowArr) {
-            if (rowArr[r] === 'ioTimes') continue;
+            if (rowArr[r] === 'ioTimes' || rowArr[r] === 'priority') continue;
             if (rowValueState.value[lastRowIndex][rowArr[r]] !== '') {
                 return true;
             }
@@ -124,7 +125,7 @@ function TableLayout(props) {
         }
         else data[rowKey][colItem] = val;
         setRowValueState({ value: data });
-        if (colItem !== 'ioTimes' && rowValueState.value.length < 50) if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
+        if (colItem !== 'ioTimes' && colItem !== 'priority' && rowValueState.value.length < 50) if (checkForLastEmptyRow()) checkForEmptyCells(rowKey);
     }
 
     const getArr = (size) => {
@@ -143,8 +144,11 @@ function TableLayout(props) {
         }
     }
 
+    // const algoName = React.useRef('');
+
     React.useEffect(() => {
         setRowValueState({ value: [ createData() ] });
+        // algoName.current = props.algo;
     }, []);
 
     // React.useEffect(() => {
@@ -182,6 +186,12 @@ function TableLayout(props) {
                     <TableRow style={{ background: '#FFF' }}>
                         <TableCell key={ 'header-delete-row' } variant='head' classes={{ head: classes.headerDeleteCell, root: classes.tableCell }} style={{ display: rowValueState.value.length < 2 ? 'none' : 'table-cell' }}></TableCell>
                         {
+                            props.algo === 'priority-scheduling' ?
+                                <TableCell key={ 'priority-num' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>Priority</TableCell>
+                            :
+                                <TableCell style={{ display: 'none' }}></TableCell>
+                        }
+                        {
                             props.ioBound ?
                                 <TableCell key={ 'iotimes' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>I/O Times</TableCell>
                             :
@@ -214,6 +224,14 @@ function TableLayout(props) {
                                             <Close style={{ fontSize: '18px', color: '#D91E2A', opacity: rowValueState.value.length > 1 ? '1' : '0' }} />
                                         </IconButton>
                                     </TableCell>
+                                    {
+                                        props.algo === 'priority-scheduling' ?
+                                            <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>
+                                                <InputField type='number' value={ rowValueState.value[rowKey]['priority'] } border='none' key={ 'inp-pri-' + rowKey + '-0' } id={ 'inp-pri-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'priority') } min='1' />
+                                            </TableCell>
+                                        :
+                                            <TableCell style={{ display: 'none' }}></TableCell>
+                                    }
                                     {
                                         props.ioBound ?
                                             <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>

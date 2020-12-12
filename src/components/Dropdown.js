@@ -17,6 +17,7 @@ function Dropdown(props) {
 
     const handleChangeAlgoClose = (event) => {
         setAnchorEl(null);
+        if (props.onClose) props.onClose();
     };
 
     React.useEffect(() => {
@@ -43,7 +44,7 @@ function Dropdown(props) {
             {
                 props.menuList.map((item, key) => {
                     return (
-                        <MenuItem key={ key } classes={{ root: classes.menuItemRoot }}>
+                        <MenuItem key={ key } onClick={ props.handleOnClick } classes={{ root: classes.menuItemRoot }}>
                             {
                                 props.links ?
                                     <Link to={ '/scheduling/' + item.link }>{ item.name }</Link>
