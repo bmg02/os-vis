@@ -1,5 +1,46 @@
-export function performCalculation(algoName, rowValueState, setRowValueState, visualState, setVisualState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState) {
+function resetTables() {
+    var table_not_arrived=document.getElementById("not-arrived");
+    var table_ready=document.getElementById("ready");
+    var table_running=document.getElementById("running");
+    var table_io=document.getElementById("io");
+    var table_terminated=document.getElementById("terminated");
+
+    // var time=document.getElementById("time");
+
+    let curr_len=table_not_arrived.rows.length;
+    for(let i=1; i<curr_len; i++)
+    {
+        table_not_arrived.deleteRow(1);
+    }
+    curr_len=table_ready.rows.length;
+    for(let i=0; i<curr_len; i++)
+    {
+        table_ready.deleteRow(0);
+    }
+    curr_len=table_running.rows.length;
+    for(let i=1; i<curr_len; i++)
+    {
+        table_running.deleteRow(1);
+    }
+    curr_len=table_io.rows.length;
+    for(let i=1; i<curr_len; i++)
+    {
+        table_io.deleteRow(1);
+    }
+    curr_len=table_terminated.rows.length;
+    for(let i=1; i<curr_len; i++)
+    {
+        table_terminated.deleteRow(1);
+    }
+}
+
+
+export async function performCalculation(algoName, rowValueState, setRowValueState, visualState, setVisualState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState, setTimeState, timeQuantumState, setFinalGanttChartState, setFinalTimelineChartState) {
+    resetTables();
+    // setAnimeState({ disable: true });
     let valuesRows = [...rowValueState.value];
+
+    console.log("Values: ", valuesRows);
 
     let lastIndx = valuesRows.pop();
 
@@ -101,13 +142,13 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
         let tq = 2;
 
         if (algoName === 'round-robin') {
-            tq = 2; // GET TimeQuantum FROM USER INPUT //(get_tq); //for RR
+            tq = timeQuantumState; // GET TimeQuantum FROM USER INPUT //(get_tq); //for RR
         }
         let pr = []; //Priority
 
         for (let i = 0; i < n; i++) {
             // pr.push(1);
-            if (algoName === 'priority-scheduling-np' || algoName === 'priority-scheduling-p') pr.push(pr[i]); //for Priority Scheduling
+            if (algoName === 'priority-scheduling-np' || algoName === 'priority-scheduling-p') pr.push(valuesRows[i]['priority']); //for Priority Scheduling
 
             // PUT PRIORITY COLUMN INPUT IN ABOVE ARRAY
         }
@@ -530,32 +571,7 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
         var table_terminated=document.getElementById("terminated");
 
         // var time=document.getElementById("time");
-
-        let curr_len=table_not_arrived.rows.length;
-        for(let i=1; i<curr_len; i++)
-        {
-            table_not_arrived.deleteRow(1);
-        }
-        curr_len=table_ready.rows.length;
-        for(let i=0; i<curr_len; i++)
-        {
-            table_ready.deleteRow(1);
-        }
-        curr_len=table_running.rows.length;
-        for(let i=1; i<curr_len; i++)
-        {
-            table_running.deleteRow(1);
-        }
-        curr_len=table_io.rows.length;
-        for(let i=1; i<curr_len; i++)
-        {
-            table_io.deleteRow(1);
-        }
-        curr_len=table_terminated.rows.length;
-        for(let i=1; i<curr_len; i++)
-        {
-            table_terminated.deleteRow(1);
-        }
+        resetTables();
 
         for(var i=0; i<not_arrived_at_every_time[0].length; i++)
         {
@@ -684,6 +700,107 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
             first.push(false);
         }
 
+        var colors= ["#5e97f6", "#db4437", "#f2a600", "#0f9d58", "#ab47bc", "#00acc1", "#ff7043", "#9e9d24", "#5c6bc0", "#f06292", "#00796b","#c2185b", "#2a56c6", "#a52714", "#ee8100", "#0b8043", "#6a1b9a", "#00838f", "#e64a19", "#827717", "#3949ab", "#e91e63", "#004d40", "#880e4f", "#c6dafc", "#f4c7c3", "#fce8b2", "#b7e1cd", "#e1bee7", "#b2ebf2", "#ffccbc", "#f0f4c3", "#c5cae9", "#f8bbd0", "#b2dfdb", "#f48fb1"];
+
+        let dataTable = [];
+        let dataColumn = timelineChartState.dataTable[0];
+        dataTable.push(dataColumn);
+        // i = parseInt(i);
+        console.log(running_at_every_time);
+        for(var ii=0; ii < running_at_every_time.length; ii++)
+        {
+            console.log(i, ii, running_at_every_time[ii]);
+            try {
+                for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                {
+                    if(first[parseInt(running_at_every_time[ii][0][0])]==false)
+                    {
+                        first[parseInt(running_at_every_time[ii][0][0])]=true;
+                        colorss.push(colors[parseInt(running_at_every_time[ii][0][0])]);
+                    }
+                    // if (ii != running_at_every_time[ii][jj][1]) continue;
+                    // if (running_at_every_time[ii][jj][2] >= parseInt(i)) {
+                    //     dataTable.push([
+                    //         'P'+running_at_every_time[ii][jj][0],
+                    //         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                    //         parseInt(i) * 1000
+                        // ]);
+                        // ii = i + 1;
+                        // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                        // ii--;
+                    // }
+                    // else {
+                        dataTable.push([
+                            'P'+running_at_every_time[ii][jj][0],
+                            parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                            parseInt(running_at_every_time[ii][jj][2]) * 1000
+                        ]);
+                        ii = parseInt(running_at_every_time[ii][jj][2]);
+                        // ii--;
+                    // }
+                }
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        var options = {
+            colors: colorss
+        };
+        setFinalTimelineChartState({ dataTable, options });
+
+        dataTable = [];
+        dataColumn = ganttChartState.dataTable[0];
+        dataTable.push(dataColumn);
+        // i = parseInt(i);
+        
+        for(var ii=0; ii < running_at_every_time.length; ii++)
+        {
+            try {
+                console.log(ii, running_at_every_time[ii]);
+                for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                {
+                    if(first[parseInt(running_at_every_time[ii][0][0])]==false)
+                    {
+                        first[parseInt(running_at_every_time[ii][0][0])]=true;
+                        colorss.push(colors[parseInt(running_at_every_time[ii][0][0])]);
+                    }
+                    // if (ii != running_at_every_time[ii][jj][1]) continue;
+                    // if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
+                    //     console.log('743');
+                    //     dataTable.push([
+                    //         'Process',
+                    //         'P'+running_at_every_time[ii][jj][0],
+                    //         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                    //         (parseInt(i) + 1) * 1000
+                    //     ]);
+                    //     ii = i + 1;
+                        // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                        // ii--;
+                    // }
+                    // else {
+                        dataTable.push([
+                            'Process',
+                            'P'+running_at_every_time[ii][jj][0],
+                            parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                            parseInt(running_at_every_time[ii][jj][2]) * 1000
+                        ]);
+                        ii = parseInt(running_at_every_time[ii][jj][2]);
+                        // ii--;
+                    // }
+                }
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        options = {
+            timeline: { showRowLabels: false },
+            colors: colorss
+        };
+        console.log(dataTable);
+        setFinalGanttChartState({ dataTable, options });
+
         async function dc1(i)
         {
             // google.charts.load('current', {'packages':['timeline']});
@@ -697,43 +814,46 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
                 let dataColumn = timelineChartState.dataTable[0];
                 dataTable.push(dataColumn);
                 i = parseInt(i);
-                for(var ii=0; ii <= i; ii++)
+                console.log(running_at_every_time);
+                for(var ii=0; ii <= i+1; ii++)
                 {
-                    console.log(ii, running_at_every_time[ii]);
-                    for(var jj=0; jj<running_at_every_time[ii].length; jj++)
-                    {
-                        // if (ii != running_at_every_time[ii][jj][1]) continue;
-                        if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
-                            console.log('707');
-                            dataTable.push([
-                                'P'+running_at_every_time[ii][jj][0],
-                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
-                                (parseInt(i) + 1) * 1000
-                            ]);
-                            ii = i + 1;
-                            // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
-                            // ii--;
+                    console.log(i, ii, running_at_every_time[ii]);
+                    try {
+                        for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                        {
+                            // if (ii != running_at_every_time[ii][jj][1]) continue;
+                            // if (running_at_every_time[ii][jj][2] >= parseInt(i)) {
+                            //     dataTable.push([
+                            //         'P'+running_at_every_time[ii][jj][0],
+                            //         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                            //         parseInt(i) * 1000
+                                // ]);
+                                // ii = i + 1;
+                                // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                                // ii--;
+                            // }
+                            // else {
+                                dataTable.push([
+                                    'P'+running_at_every_time[ii][jj][0],
+                                    parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                    parseInt(running_at_every_time[ii][jj][2]) * 1000
+                                ]);
+                                ii = parseInt(running_at_every_time[ii][jj][2]);
+                                // ii--;
+                            // }
                         }
-                        else {
-                            dataTable.push([
-                                'P'+running_at_every_time[ii][jj][0],
-                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
-                                parseInt(running_at_every_time[ii][jj][2]) * 1000
-                            ]);
-                            ii += parseInt(running_at_every_time[ii][jj][2]);
-                            ii--;
-                        }
+                    }
+                    catch(e) {
+                        console.log(e);
                     }
                 }
                 var options = {
-                  colors: colorss
+                    colors: colorss
                 };
                 setTimelineChartState({ dataTable, options });
-                // chart.draw(dataTable,options);
+                    // chart.draw(dataTable,options);
             // };
         }
-
-        var colors= ["#5e97f6", "#db4437", "#f2a600", "#0f9d58", "#ab47bc", "#00acc1", "#ff7043", "#9e9d24", "#5c6bc0", "#f06292", "#00796b","#c2185b", "#2a56c6", "#a52714", "#ee8100", "#0b8043", "#6a1b9a", "#00838f", "#e64a19", "#827717", "#3949ab", "#e91e63", "#004d40", "#880e4f", "#c6dafc", "#f4c7c3", "#fce8b2", "#b7e1cd", "#e1bee7", "#b2ebf2", "#ffccbc", "#f0f4c3", "#c5cae9", "#f8bbd0", "#b2dfdb", "#f48fb1"];
 
         let c_running = -1;
         async function dc2(i)
@@ -755,45 +875,53 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
                 let dataColumn = ganttChartState.dataTable[0];
                 dataTable.push(dataColumn);
                 i = parseInt(i);
-                for(var ii=0; ii <= i; ii++)
+                
+                for(var ii=0; ii <= i+1; ii++)
                 {
-                    console.log(ii, running_at_every_time[ii]);
-                    for(var jj=0; jj<running_at_every_time[ii].length; jj++)
-                    {
-                        // if (ii != running_at_every_time[ii][jj][1]) continue;
-                        if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
-                            console.log('743');
-                            dataTable.push([
-                                'Process',
-                                'P'+running_at_every_time[ii][jj][0],
-                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
-                                (parseInt(i) + 1) * 1000
-                            ]);
-                            ii = i + 1;
-                            // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
-                            // ii--;
+                    try {
+                        console.log(ii, running_at_every_time[ii]);
+                        for(var jj=0; jj<running_at_every_time[ii].length; jj++)
+                        {
+                            // if (ii != running_at_every_time[ii][jj][1]) continue;
+                            // if (running_at_every_time[ii][jj][2] >= parseInt(i) + 1) {
+                            //     console.log('743');
+                            //     dataTable.push([
+                            //         'Process',
+                            //         'P'+running_at_every_time[ii][jj][0],
+                            //         parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                            //         (parseInt(i) + 1) * 1000
+                            //     ]);
+                            //     ii = i + 1;
+                                // ii += Math.min(i+1, parseInt(running_at_every_time[ii][jj][2]));
+                                // ii--;
+                            // }
+                            // else {
+                                dataTable.push([
+                                    'Process',
+                                    'P'+running_at_every_time[ii][jj][0],
+                                    parseInt(running_at_every_time[ii][jj][1]) * 1000,
+                                    parseInt(running_at_every_time[ii][jj][2]) * 1000
+                                ]);
+                                ii = parseInt(running_at_every_time[ii][jj][2]);
+                                // ii--;
+                            // }
                         }
-                        else {
-                            dataTable.push([
-                                'Process',
-                                'P'+running_at_every_time[ii][jj][0],
-                                parseInt(running_at_every_time[ii][jj][1]) * 1000,
-                                parseInt(running_at_every_time[ii][jj][2]) * 1000
-                            ]);
-                            ii += parseInt(running_at_every_time[ii][jj][2]);
-                            ii--;
-                        }
+                    }
+                    catch(e) {
+                        console.log(e);
                     }
                 }
                 var options = {
-                  timeline: { showRowLabels: false },
-                  colors: colorss
+                    timeline: { showRowLabels: false },
+                    colors: colorss
                 };
                 console.log(dataTable);
                 setGanttChartState({ dataTable, options });
+                
                 // chart.draw(dataTable,options);
             // }
         }
+        console.log(running_at_every_time);
         // async function dc2(i)
         // {
         //     console.log("i + 1: ", i+1);
@@ -924,6 +1052,7 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
                 await sleep(100);
                 // txt.innerHTML="";
                 // time.innerHTML=("t = " + i);
+                setTimeState(i);
 
                 // Not arrived to ready table
                 for(var j=0; j<not_arrived_to_ready_count_at_every_time[i+1]; j++)
@@ -1110,11 +1239,24 @@ export function performCalculation(algoName, rowValueState, setRowValueState, vi
                 if (running_at_every_time[i].length == 1) {
                     await dc1(i);
                     await dc2(i);
+                    if (i == curr_time - 1) setTimeState('Finished');
                 }
             },6000*i);
+
+
+            // if (stopAnimationState) {
+            //     clearTimeout(timeout1Variable);
+            //     console.log('cleared');
+            // }
         }
         for(var i=0; i<curr_time; i++)
         {
+            // console.log('StopState: ', stopAnimationState);
+            // if (stopAnimationState) {
+            //     console.log('returning');
+            //     return;
+            // }
+            // else
             timeout1(i);
         }
 }

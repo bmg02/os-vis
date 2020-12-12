@@ -1,14 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MenuItem, Popover, makeStyles, Snackbar } from '@material-ui/core';
-import { Drawer, Switch, Button, TableLayout, VisualTable, InputField } from '../components';
-import { History, PlayArrow, SettingsSharp } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import { makeStyles, Snackbar } from '@material-ui/core';
+import { Drawer, Switch, Button, TableLayout, InputField, VisualTables, DialogBox, Dropdown } from '../components';
+import { HistoryRounded, PlayArrow, TimelineRounded, TrendingFlatRounded } from '@material-ui/icons';
 import './Algo.scss';
 import '../layouts/wow.css';
 import { capitalizeEachWord } from '../util/general';
 import { performCalculation } from '../util/algorithms';
-import { DialogBox, Dropdown, DropdownMenu } from '../components';
-import Charts, { Chart } from 'react-google-charts';
+import { Chart } from 'react-google-charts';
 
 const useStyle = makeStyles(theme => ({
     menuItemRoot: {
@@ -21,14 +20,15 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const cols = ["AT (in Ready State)", "Total CPU BT Left", "Total CPU BT", "Next CPU BT", "Total IOBT", "Next Left CPU BT", "P. No.", "AT (First AT)", "Total (CPU+IO) BT Left", "Priority"];
 
 function Algo(props) {
+
+    const history = useHistory();
 
     const classes = useStyle();
 
     const [ ioBoundState, setIoBoundState ] = React.useState(false);
-
+    const [ preemptiveState, setPreemptiveState ] = React.useState(false);
 
     const [ tableAnimeValueState, setTableAnimeValueState ] = React.useState({
         notArrived: [[]],
@@ -56,34 +56,68 @@ function Algo(props) {
 
     const [ tableValueState, setTableValueState ] = React.useState({ value: [] });
 
-    const [ animeState, setAnimeState ] = React.useState(false);
+    // const [ animeState, setAnimeState ] = React.useState(false);
 
-    const [ ganttChartState, setGanttChartState ] = React.useState({
-        dataTable: [
-            [
-                { type: 'string', id: 'Position' },
-                { type: 'string', id: 'Process' },
-                { type: 'number', id: 'Start' },
-                { type: 'number', id: 'End' }
-            ]
-        ],
-        options: {}
-    });
+    const initChart = (n) => {
+        if (n === 4) {
+            return ({
+                dataTable: [
+                    [
+                        { type: 'string', id: 'Position' },
+                        { type: 'string', id: 'Process' },
+                        { type: 'number', id: 'Start' },
+                        { type: 'number', id: 'End' }
+                    ]
+                ],
+                options: {}
+            });
+        }
+        else if (n === 3) {
+            return ({
+                dataTable: [
+                    [
+                        { type: 'string', id: 'Process' },
+                        { type: 'number', id: 'Start' },
+                        { type: 'number', id: 'End' }
+                    ]
+                ],
+                options: {}
+            });
+        }
+    }
 
-    const [ timelineChartState, setTimelineChartState ] = React.useState({
-        dataTable: [
-            [
-                { type: 'string', id: 'Process' },
-                { type: 'number', id: 'Start' },
-                { type: 'number', id: 'End' }
-            ]
-        ],
-        options: {}
-    });
+    const [ ganttChartState, setGanttChartState ] = React.useState(initChart(4));
+    const [ finalGanttChartState, setFinalGanttChartState ] = React.useState(initChart(4));
 
-    const handleSwitchChange = (e) => {
+    const [ timelineChartState, setTimelineChartState ] = React.useState(initChart(3));
+    const [ finalTimelineChartState, setFinalTimelineChartState ] = React.useState(initChart(3));
+
+    const handleIOChange = (e) => {
         setIoBoundState(e.target.checked);
     }
+
+    const handlePreemptiveChange = (e) => {
+        // console.log(e.target.checked);
+        setPreemptiveState(e.target.checked);
+        if (e.target.checked) {
+            if (props.match.params.algo === 'shortest-job-first') history.push('/scheduling/shortest-remaining-time-first');
+            else if (props.match.params.algo === 'longest-job-first') history.push('/scheduling/longest-remaining-time-first');
+            else if (props.match.params.algo === 'priority-scheduling-np') history.push('/scheduling/priority-scheduling-p');
+        }
+        else {
+            if (props.match.params.algo === 'shortest-remaining-time-first') history.push('/scheduling/shortest-job-first');
+            else if (props.match.params.algo === 'longest-remaining-time-first') history.push('/scheduling/longest-job-first');
+            else if (props.match.params.algo === 'priority-scheduling-p') history.push('/scheduling/priority-scheduling-np');
+        }
+    }
+
+    const [ ganttDialogState, setGanttDialogState ] = React.useState(false);
+    const handleGanttDialogOpen = () => setGanttDialogState(true);
+    const handleGanttDialogClose = () => setGanttDialogState(false);
+    
+    const [ timelineDialogState, setTimelineDialogState ] = React.useState(false);
+    const handleTimelineDialogOpen = () => setTimelineDialogState(true);
+    const handleTimelineDialogClose = () => setTimelineDialogState(false);
 
     const [ changeAlgoState, setChangeAlgoState ] = React.useState(null);
     const handleAlgoOpen = (e) => {
@@ -110,8 +144,13 @@ function Algo(props) {
             cpuUtil: '',
             throughput: ''
         });
+        setTimeState('');
+        setGanttChartState(initChart(4));
+        setTimelineChartState(initChart(3));
+        setTimeLogState({ list: [] });
+        setFinalGanttChartState(initChart(4));
+        setFinalTimelineChartState(initChart(3));
         // document.getElementById('visualAnimeDiv').remove();
-        setAnimeState(false);
     }
 
     // const [ priorityState, setPriorityState ] = React.useState({
@@ -150,9 +189,12 @@ function Algo(props) {
 
     const getVisualAnimation = () => {
         // document.getElementById('visualAnimeDiv').remove();
-        setAnimeState(true);
+        // console.log('151');
         document.getElementById('visualAnimeDiv').style.display = 'inline-block';
-        performCalculation(props.match.params.algo, tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState);
+        performCalculation(props.match.params.algo, tableValueState, setTableValueState, tableAnimeValueState, setTableAnimeValueState, ganttChartState, setGanttChartState, timelineChartState, setTimelineChartState, timeLogState, setTimeLogState, setTimeState, timeQuantumState, setFinalGanttChartState, setFinalTimelineChartState);
+        // setTimeout(() => {
+        //     console.log(animeState);
+        // }, 2000);
     }
 
     const [ timeQuantumState, setTimeQuantumState ] = React.useState(2);
@@ -162,6 +204,7 @@ function Algo(props) {
 
     React.useEffect(() => {
         document.title = capitalizeEachWord(props.match.params.algo.replace(/-/g, ' ')) + ' at OS-VIS';
+        setPreemptiveState(props.match.params.algo === 'round-robin' || props.match.params.algo === 'shortest-remaining-time-first' || props.match.params.algo === 'longest-remaining-time-first' || props.match.params.algo === 'priority-scheduling-p');
 
     //     if (props.match.params.algo === 'first-come-first-serve') {
     //         priorityList.current = {
@@ -194,20 +237,22 @@ function Algo(props) {
     //             dropdown3: [ cols[6] ],
     //         };
     //     }
-    }, []);
+    }, [props.match.params.algo]);
 
 
     return (
         <div style={{ display: 'flex' }}>
-            <Snackbar open={ priorityErrState } onClose={ handlePriorityErrChange } message='Priority must not be same.' />
+            {/* <Snackbar open={ priorityErrState } onClose={ handlePriorityErrChange } message='Priority must not be same.' /> */}
             <Drawer anchor='left' content={
                 <div>
-                    <div className='section-heading extra-large margin-20'>{ props.match.params.algo.replace(/-/g, ' ') }</div>
-                    <div className='extra-small margin-20' style={{ alignSelf: 'baseline' }}><Button onClick={ handleAlgoOpen }>Change Algorithm</Button></div>
+                    <div className='section-heading extra-large margin-20'>{
+                        props.match.params.algo === 'priority-scheduling-np' || props.match.params.algo === 'priority-scheduling-p' ? 'Priority Scheduling' : props.match.params.algo.replace(/-/g, ' ')
+                    }</div>
+                    <div className='extra-small margin-20' style={{ alignSelf: 'baseline' }}><Button onClick={ handleAlgoOpen } disabled={ timeState !== '' && timeState !== 'Finished' }>Change Algorithm</Button></div>
 
                     <Dropdown open={ changeAlgoState } handleOnClick={ handleOnClickChangeAlgo } onClose={ handleChangeAlgoClose } links={ true } menuList={[
                         { name: 'First Come First Serve', link: 'first-come-first-serve' },
-                        { name: 'Priority Scheduling', link: 'priority-scheduling' },
+                        { name: 'Priority Scheduling', link: 'priority-scheduling-np' },
                         { name: 'Longest Job First', link: 'longest-job-first' },
                         { name: 'Longest Remaining Time First', link: 'longest-remaining-time-first' },
                         { name: 'Round Robin', link: 'round-robin' },
@@ -216,10 +261,10 @@ function Algo(props) {
                     ]} />
                     
                     <br/><br/>
-                    <div><Switch checked={ ioBoundState } onChange={ handleSwitchChange } label='I/O Bound' /></div>
+                    <div><Switch checked={ ioBoundState } onChange={ handleIOChange } disabled={ timeState !== '' && timeState !== 'Finished' } label='I/O Bound' /></div>
                     <br/>
                     <br/>
-                    <div><Switch checked={ ioBoundState } onChange={ handleSwitchChange } label='Preemptive' /></div>
+                    <div><Switch checked={ preemptiveState } onChange={ handlePreemptiveChange } disabled={ (timeState !== '' && timeState !== 'Finished') || (props.match.params.algo === 'first-come-first-serve' || props.match.params.algo === 'round-robin') } label='Preemptive' /></div>
                     <br/><br/>
                     {
                         props.match.params.algo === 'round-robin' ?
@@ -244,8 +289,18 @@ function Algo(props) {
                     </div> */}
                     <br/><br/>
                     <div className='margin-10'>
-                        <Button size='small' style={{ float: 'none' }} onClick={ handleTimeLogDialogOpen }>
-                            <div>View Time Log</div> &nbsp;&nbsp;&nbsp;<History fontSize='small' />
+                        <Button size='small' style={{ float: 'none', display: 'flex', alignItems: 'center' }} onClick={ handleTimeLogDialogOpen }>
+                            <div>Time Log</div> &nbsp;&nbsp;&nbsp;<HistoryRounded fontSize='small' />
+                        </Button>
+                    </div><br/>
+                    <div className='margin-10'>
+                        <Button size='small' style={{ float: 'none', display: 'flex', alignItems: 'center' }} onClick={ handleGanttDialogOpen }>
+                            <div>Gantt Chart</div> &nbsp;&nbsp;&nbsp;<TrendingFlatRounded fontSize='small' />
+                        </Button>
+                    </div><br/>
+                    <div className='margin-10'>
+                        <Button size='small' style={{ float: 'none', display: 'flex', alignItems: 'center' }} onClick={ handleTimelineDialogOpen }>
+                            <div>Timeline Chart</div> &nbsp;&nbsp;&nbsp;<TimelineRounded fontSize='small' />
                         </Button>
                     </div>
                     {/* <div className='margin-10'>
@@ -260,10 +315,10 @@ function Algo(props) {
                 <div className='section-div section-margin-left'>
                     <center>
                     <div style={{ width: 'max-content' }}>
-                        <TableLayout algo={ props.match.params.algo } ioBound={ ioBoundState } rowValueState={ tableValueState } setRowValueState={ setTableValueState }  />
+                        <TableLayout algo={ props.match.params.algo } ioBound={ ioBoundState } rowValueState={ tableValueState }  disabled={ timeState !== '' && timeState !== 'Finished' } setRowValueState={ setTableValueState }  />
                         <br/>
                         <br/><br/>
-                        <Button classnames='float-right' onClick={ getVisualAnimation } style={{ display: 'flex', alignItems: 'center' }}><span style={{ margin: '0 5px' }}>PLAY</span><PlayArrow style={{ color: '#333' }} /></Button>
+                        <Button classnames='float-right' onClick={ getVisualAnimation } disabled={ timeState !== '' && timeState !== 'Finished' } style={{ display: 'flex', alignItems: 'center' }}><span style={{ margin: '0 5px' }}>PLAY</span><PlayArrow style={{ color: '#333' }} /></Button>
                         <div style={{ clear: 'both' }}></div>
                         <br/><br/>
                         <div style={{ display: tableAnimeValueState.avgTat !== '' ? 'block' : 'none' }}>
@@ -271,11 +326,11 @@ function Algo(props) {
                             <div className={ classes.avgsDiv }>Avg. WT: { parseFloat(tableAnimeValueState.avgWt).toFixed(3) }</div>
                             <div className={ classes.avgsDiv }>Avg. RT: { parseFloat(tableAnimeValueState.avgRt).toFixed(3) }</div>
                             <br/>
-                            <div className={ classes.avgsDiv }>CPU Utilization: { parseFloat(tableAnimeValueState.cpuUtil).toFixed(3) }</div>
+                            <div className={ classes.avgsDiv }>CPU Utilization: { parseFloat(tableAnimeValueState.cpuUtil).toFixed(3) } %</div>
                             <div className={ classes.avgsDiv }>Throughput: { parseFloat(tableAnimeValueState.throughput).toFixed(3) }</div>
                         </div>
                         <div className='section-div'>
-                            <div className='section-heading text-left' style={{ float: 'left' }}>
+                            <div className='section-heading text-left' style={{ display: timeState !== '' ? "block" : 'none', float: 'left' }}>
                                 CPU Scheduling
                             </div>
                             {
@@ -286,65 +341,8 @@ function Algo(props) {
                             }
                         </div>
                         <br/><br/>
-                        <div id='visualAnimeDiv' style={{ display: animeState ? "block" : 'none' }}>
-                        <div id="main" style={{ display: 'flex' }}>
-                            <table id="not-arrived" className="content-table">
-                                <caption> Not Arrived </caption>
-                                <tr>
-                                    <th>P. No.</th>
-                                    <th>AT</th>
-                                </tr>
-                            </table>
-
-                            <i id="a1" style={{ marginTop: '70px', fontSize: '60px', marginLeft: '40px', marginRight: '40px', color: '#5c5c5c' }} className="fas fa-long-arrow-alt-right"></i>
-
-                            <table id="ready" className="content-table">
-                                <caption> Ready </caption>
-                            </table>
-
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <i id="a2" style={{ marginTop: '70px', fontSize: '60px', marginLeft: '40px', marginRight: '40px', color: '#5c5c5c' }} className="fas fa-long-arrow-alt-right"></i>
-                                <i id="a3" style={{ marginTop: '-2px', fontSize: '60px', marginLeft: '40px', marginRight: '40px', color: '#5c5c5c' }} className="fas fa-long-arrow-alt-left"></i>
-                            </div>
-
-                            <table id="running" className="content-table">
-                                <caption> Running </caption>
-                                <tr>
-                                    <th>P. No.</th>
-                                    <th>Entered At</th>
-                                    <th>Will Leave At</th>
-                                </tr>
-                            </table>
-
-                            <i id="a4" style={{ marginTop: '70px', fontSize: '60px', marginLeft: '40px', marginRight: '40px', color: '#5c5c5c' }} className="fas fa-long-arrow-alt-right"></i>
-
-                            <table id="terminated" className="content-table">
-                                <caption> Terminated </caption>
-                                <tr>
-                                    <th>P. No.</th>
-                                    <th>Terminated At</th>
-                                </tr>
-                            </table>
-
-                        </div>
-                        <div>
-                            <i id="a5" style={{ marginTop:'-32px', marginBottom: '7px', fontSize: '60px', marginLeft: '120px', color: '#5c5c5c' }} className="fas fa-long-arrow-alt-down"></i>
-                        </div>
-                        <div style={{marginLeft: '380px', display: 'flex', flexDirection: 'row' }}>
-                            <div style={{ marginTop: '-5px', fontSize: '65px' }}>
-                                <i id="a6" style={{ marginRight: '17px', color: '#5c5c5c', transform: 'rotate(45deg)' }} className="fas fa-long-arrow-alt-left"></i>
-                            </div>
-                            <div>
-                                <table id="io" className="content-table">
-                                    <caption> IO/Blocked </caption>
-                                    <tr>
-                                        <th>P. No.</th>
-                                        <th>Entered At</th>
-                                        <th>Will Leave At</th>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+                        <div id='visualAnimeDiv' style={{ display: timeState !== '' ? "block" : 'none' }}>
+                            <VisualTables />
                             {/*<table id="not-arrived" className="content-table">
                                 <caption> Not Arrived </caption>
                                 <tr>
@@ -395,12 +393,19 @@ function Algo(props) {
                                 {/* <div id="txt"> </div> */}
                             {/* </div> */}
                             {/* <div id="t" style="height: 250px;"></div> */}
-                            <br/><br/>
+                            <br/><br/><br/><br/><br/><br/>
+                            <div className='section-heading text-left' style={{ display: timeState !== '' ? "block" : 'none', float: 'left' }}>
+                                Gantt Chart
+                            </div><br/><br/>
                             <Chart
                                 chartType='Timeline'
                                 data={ ganttChartState.dataTable }
                                 options={ ganttChartState.options }
                             />
+                            <br/>
+                            <div className='section-heading text-left' style={{ display: timeState !== '' ? "block" : 'none', float: 'left' }}>
+                                Timeline Chart
+                            </div><br/><br/>
                             <Chart
                                 chartType='Timeline'
                                 data={ timelineChartState.dataTable }
@@ -431,6 +436,34 @@ function Algo(props) {
                                     </React.Fragment>
                                 :
                                     <div className='title'>No time log to show.</div>
+                            }
+                        </div>
+                    } />
+                    <DialogBox open={ ganttDialogState } onClose={ handleGanttDialogClose } title='Gantt Chart' content={
+                        <div>
+                            {
+                                finalGanttChartState.dataTable.length > 1 ?
+                                    <Chart
+                                        chartType='Timeline'
+                                        data={ finalGanttChartState.dataTable }
+                                        options={ finalGanttChartState.options }
+                                    />
+                                :
+                                    <div className='title'>Nothing to show.</div>
+                            }
+                        </div>
+                    } />
+                    <DialogBox open={ timelineDialogState } onClose={ handleTimelineDialogClose } title='Timeline Chart' content={
+                        <div>
+                            {
+                                finalTimelineChartState.dataTable.length > 1 ?
+                                    <Chart
+                                        chartType='Timeline'
+                                        data={ finalTimelineChartState.dataTable }
+                                        options={ finalTimelineChartState.options }
+                                    />
+                                :
+                                    <div className='title'>Nothing to show.</div>
                             }
                         </div>
                     } />

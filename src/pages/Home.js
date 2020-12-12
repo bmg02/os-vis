@@ -16,7 +16,7 @@ function Home() {
                 <div className='section-content max-content-width'>
                     <ul>
                         <Link to='/scheduling/first-come-first-serve'><li>First Come First Serve</li></Link>
-                        <Link to='/scheduling/priority-scheduling'><li>Priority Scheduling</li></Link>
+                        <Link to='/scheduling/priority-scheduling-np'><li>Priority Scheduling</li></Link>
                         <Link to='/scheduling/longest-job-first'><li>Longest Job First</li></Link>
                         <Link to='/scheduling/longest-remaining-time-first'><li>Longest Remaining Time First</li></Link>
                         <Link to='/scheduling/round-robin'><li>Round Robin</li></Link>

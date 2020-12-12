@@ -186,7 +186,7 @@ function TableLayout(props) {
                     <TableRow style={{ background: '#FFF' }}>
                         <TableCell key={ 'header-delete-row' } variant='head' classes={{ head: classes.headerDeleteCell, root: classes.tableCell }} style={{ display: rowValueState.value.length < 2 ? 'none' : 'table-cell' }}></TableCell>
                         {
-                            props.algo === 'priority-scheduling' ?
+                            props.algo === 'priority-scheduling-np' || props.algo === 'priority-scheduling-p' ?
                                 <TableCell key={ 'priority-num' } variant='head' classes={{ head: classes.headerCell, root: classes.tableCell }} style={{ border: 'none' }}>Priority</TableCell>
                             :
                                 <TableCell style={{ display: 'none' }}></TableCell>
@@ -225,9 +225,9 @@ function TableLayout(props) {
                                         </IconButton>
                                     </TableCell>
                                     {
-                                        props.algo === 'priority-scheduling' ?
+                                        props.algo === 'priority-scheduling-np' || props.algo === 'priority-scheduling-p' ?
                                             <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>
-                                                <InputField type='number' value={ rowValueState.value[rowKey]['priority'] } border='none' key={ 'inp-pri-' + rowKey + '-0' } id={ 'inp-pri-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'priority') } min='1' />
+                                                <InputField type='number' readOnly={ props.disabled } value={ rowValueState.value[rowKey]['priority'] } border='none' key={ 'inp-pri-' + rowKey + '-0' } id={ 'inp-pri-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'priority') } min='1' />
                                             </TableCell>
                                         :
                                             <TableCell style={{ display: 'none' }}></TableCell>
@@ -235,7 +235,7 @@ function TableLayout(props) {
                                     {
                                         props.ioBound ?
                                             <TableCell key={ 'rowcell-iotimes-' + rowKey } classes={{ root: classes.tableCell }}>
-                                                <InputField type='number' value={ rowValueState.value[rowKey]['ioTimes'] } border='none' key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'ioTimes') } min='0' max='10' />
+                                                <InputField type='number' value={ rowValueState.value[rowKey]['ioTimes'] } border='none'  readOnly={ props.disabled } key={ 'inp-' + rowKey + '-0' } id={ 'inp-' + rowKey + '-0' } onChange={ (e) => handleValueChange(e, rowKey, 'ioTimes') } min='0' max='10' />
                                             </TableCell>
                                         :
                                             <TableCell style={{ display: 'none' }}></TableCell>
@@ -266,17 +266,17 @@ function TableLayout(props) {
                                                                 <TableBody>
                                                                     <TableRow>
                                                                         <TableCell key={ 'rowcell-btime-' + rowKey + '' } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px'}}>
-                                                                            <InputField type='number' value={ rowItem['btime0'] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', 0) } key={ 'inp-btime-' + rowKey + '-0' } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-0' } min='1' max='5000' />
+                                                                            <InputField type='number' readOnly={ props.disabled } value={ rowItem['btime0'] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', 0) } key={ 'inp-btime-' + rowKey + '-0' } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-0' } min='1' max='5000' />
                                                                         </TableCell>
                                                                         {
                                                                             getArr(rowValueState.value[rowKey]['ioTimes']).map((ele, eleIndex) => {
                                                                                 return (
                                                                                     <React.Fragment key={(eleIndex + 1)}>
                                                                                         <TableCell key={ 'rowcell-iobtime-' + rowKey + '-' + (eleIndex + 1) } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px', marginLeft: (eleIndex + 1) === 0 ? '' : '5px' }}>
-                                                                                            <InputField type='number' value={ rowItem['iobtime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'iobtime', (eleIndex + 1)) } key={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='IOBT' id={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
+                                                                                            <InputField type='number' readOnly={ props.disabled } value={ rowItem['iobtime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'iobtime', (eleIndex + 1)) } key={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='IOBT' id={ 'inp-iobtime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
                                                                                         </TableCell>
                                                                                         <TableCell key={ 'rowcell-btime-' + rowKey + '-' + (eleIndex + 1) } variant='head' classes={{ root: classes.tableCell }} style={{ maxWidth: '100%', width: '100px', border: 'none', fontSize: '12px' }}>
-                                                                                            <InputField type='number' value={ rowItem['btime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', (eleIndex + 1)) } key={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
+                                                                                            <InputField type='number' readOnly={ props.disabled } value={ rowItem['btime' + (eleIndex + 1)] } onChange={ (e) => handleValueChange(e, rowKey, 'btime', (eleIndex + 1)) } key={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } border='none' placeholder='BT' id={ 'inp-btime-' + rowKey + '-' + (eleIndex + 1) } min='1' max='5000' />
                                                                                         </TableCell>
                                                                                     </React.Fragment>
                                                                                 )
@@ -294,7 +294,7 @@ function TableLayout(props) {
                                                                 </TableBody>
                                                             </Table>
                                                         :
-                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } readOnly={ colItem !== 'atime' && colItem !== 'btime' ? true : false } />
+                                                            <InputField type='number' value={ rowItem[colItem] } onChange={ (e) => handleValueChange(e, rowKey, colItem) } key={ 'inp-' + colItem + '-' + rowKey } border='none' id={ 'inp-' + colItem + '-' + rowKey } min={ colItem === 'btime' ? '1' : '0' } readOnly={ props.disabled || (colItem !== 'atime' && colItem !== 'btime') ? true : false } />
                                                     }
                                                     {/* {
                                                         colItem === 'btime' && props.ioBound ?

@@ -8,5 +8,6 @@ import VisualTable from './VisualTable';
 import DialogBox from './DialogBox';
 import Dropdown from './Dropdown';
 import DropdownMenu from './DropdownMenu';
+import VisualTables from './VisualTables';
 
-export { HeaderImage, Drawer, Switch, InputField, InputFieldWithLabel, Button, TableLayout, VisualTable, DialogBox, Dropdown, DropdownMenu };
+export { HeaderImage, Drawer, Switch, InputField, InputFieldWithLabel, Button, TableLayout, VisualTable, DialogBox, Dropdown, DropdownMenu, VisualTables };
