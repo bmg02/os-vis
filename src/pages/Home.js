@@ -45,7 +45,7 @@ function Home() {
                 </div>
                 <div className='flex-layout' style={{ marginTop: '60px' }}>
                     <div className='flex-auto'>
-                        <object data='https://www.youtube.com/embed/vi6v0MOWp2Q' alt='Video tutorial' width='460px' height='260px'></object>
+                        <object data='https://www.youtube.com/embed/hi3Bt4ldEoY' alt='Video tutorial' width='460px' height='260px'></object>
                     </div>
                     <div className='small-section-content flex-auto'>
                         <div className='section-heading text-left extra-large'>Developers</div>
